@@ -1,107 +1,133 @@
-#include "main.h"
+#include "main.h" // IWYU pragma: keep
 #include "devices.h"
 #include "lemlib/api.hpp" // IWYU pragma: keep
 
-// ---------- Autonomous routines ----------
-void left_rush() { pros::lcd::set_text(1, "Running Left Rush"); }
-void right_rush() { pros::lcd::set_text(1, "Running Right Rush"); }
-void skills() { pros::lcd::set_text(1, "Running Skills"); }
-void awp() { pros::lcd::set_text(1, "Running AWP"); }
-void solo_awp() { pros::lcd::set_text(1, "Running Solo AWP"); }
-void defense() { pros::lcd::set_text(1, "Running Defense"); }
-void far_side() { pros::lcd::set_text(1, "Running Far Side"); }
-void test_auto() { pros::lcd::set_text(1, "Running Test Auton"); }
+extern const lv_image_dsc_t team_logo;
+extern const lv_image_dsc_t sparrow;
 
-// ---------- Function-pointer array (EZ-style) ----------
-using AutonFn = void (*)();
-AutonFn autonFunctions[8] = {left_rush, right_rush, skills,   awp,
-                             solo_awp,  defense,    far_side, test_auto};
-const char *autonNames[8] = {"Left Rush", "Right Rush", "Skills",   "AWP",
-                             "Solo AWP",  "Defense",    "Far Side", "Test"};
+// =================== AUTON SELECTOR CODE ===================
 
-// ---------- UI globals ----------
-int selectedAuton = 0;
-lv_obj_t *label_auton;
-lv_obj_t *label_pose;
+// Define autonomous routines
+void leftSideAuto() { /* your auton code */ }
+void rightSideAuto() { /* your auton code */ }
+void skillsAuto() { /* your auton code */ }
+void doNothing() {}
 
-// ---------- Helpers ----------
-void updateAutonLabel() {
-  lv_label_set_text(label_auton, autonNames[selectedAuton]);
+// Struct for autos
+struct AutoRoutine {
+  const char *name;
+  const char *description;
+  void (*routine)();
+};
+
+// Define all autos here
+AutoRoutine autos[] = {
+    {"Left Side", "Scores preload and rushes center stake", leftSideAuto},
+    {"Right Side", "Scores preload and grabs match load", rightSideAuto},
+    {"Skills", "Full field skills run", skillsAuto},
+    {"Do Nothing", "Literally does nothing", doNothing}};
+
+const int NUM_AUTOS = sizeof(autos) / sizeof(autos[0]);
+int currentAutoIndex = 0;
+
+// LVGL objects
+lv_obj_t *labelTitle;
+lv_obj_t *labelDesc;
+lv_obj_t *labelPose;
+lv_timer_t *poseTimer;
+
+// Updates the text for the current auto
+void updateAutoDisplay() {
+  lv_label_set_text_fmt(labelTitle, "Auto %d/%d: %s", currentAutoIndex + 1,
+                        NUM_AUTOS, autos[currentAutoIndex].name);
+  lv_label_set_text(labelDesc, autos[currentAutoIndex].description);
 }
-void updatePoseTask(void *);
 
-// ---------- LVGL button callbacks ----------
-void nextAuton(lv_event_t *e) {
-  selectedAuton = (selectedAuton + 1) % 8; // wrap forward
-  updateAutonLabel();
-}
-void prevAuton(lv_event_t *e) {
-  selectedAuton = (selectedAuton - 1 + 8) % 8; // wrap backward
-  updateAutonLabel();
+// Called every 100ms to update chassis position
+void updatePose(lv_timer_t *timer) {
+  (void)timer;
+  lv_label_set_text_fmt(labelPose, "X: %.2f   Y: %.2f   Theta: %.2f°",
+                        chassis.getPose().x, chassis.getPose().y,
+                        chassis.getPose().theta);
 }
 
-// ---------- LVGL page creation ----------
-void createAutonPage() {
+// Move between autos with wrap-around
+void nextAuto(lv_event_t *e) {
+  currentAutoIndex = (currentAutoIndex + 1) % NUM_AUTOS;
+  updateAutoDisplay();
+}
+void prevAuto(lv_event_t *e) {
+  currentAutoIndex = (currentAutoIndex - 1 + NUM_AUTOS) % NUM_AUTOS;
+  updateAutoDisplay();
+}
+
+// Initialize the selector screen
+void autonSelectorInit() {
   lv_obj_t *screen = lv_screen_active();
+  lv_obj_clean(screen);
 
-  // Title
-  lv_obj_t *title = lv_label_create(screen);
-  lv_label_set_text(title, "Auton Selector");
-  lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 10);
+  // Title label
+  labelTitle = lv_label_create(screen);
+  lv_obj_align(labelTitle, LV_ALIGN_TOP_MID, 0, 20);
 
-  // Auton name label
-  label_auton = lv_label_create(screen);
-  lv_label_set_text(label_auton, autonNames[selectedAuton]);
-  lv_obj_align(label_auton, LV_ALIGN_CENTER, 0, -20);
+  // Description label
+  labelDesc = lv_label_create(screen);
+  lv_label_set_long_mode(labelDesc, LV_LABEL_LONG_WRAP);
+  lv_obj_set_width(labelDesc, 200);
+  lv_obj_align(labelDesc, LV_ALIGN_CENTER, 0, -10);
 
-  // Left button
-  lv_obj_t *btn_left = lv_button_create(screen);
-  lv_obj_set_size(btn_left, 60, 40);
-  lv_obj_align(btn_left, LV_ALIGN_LEFT_MID, 10, -20);
-  lv_obj_add_event_cb(btn_left, prevAuton, LV_EVENT_CLICKED, NULL);
-  lv_obj_t *lbl_left = lv_label_create(btn_left);
-  lv_label_set_text(lbl_left, "<");
+  // Buttons
+  lv_obj_t *btnPrev = lv_button_create(screen);
+  lv_obj_align(btnPrev, LV_ALIGN_LEFT_MID, 10, 0);
+  lv_obj_t *lblPrev = lv_label_create(btnPrev);
+  lv_label_set_text(lblPrev, LV_SYMBOL_LEFT);
+  lv_obj_center(lblPrev);
+  lv_obj_add_event_cb(btnPrev, prevAuto, LV_EVENT_CLICKED, NULL);
 
-  // Right button
-  lv_obj_t *btn_right = lv_button_create(screen);
-  lv_obj_set_size(btn_right, 60, 40);
-  lv_obj_align(btn_right, LV_ALIGN_RIGHT_MID, -10, -20);
-  lv_obj_add_event_cb(btn_right, nextAuton, LV_EVENT_CLICKED, NULL);
-  lv_obj_t *lbl_right = lv_label_create(btn_right);
-  lv_label_set_text(lbl_right, ">");
+  lv_obj_t *btnNext = lv_button_create(screen);
+  lv_obj_align(btnNext, LV_ALIGN_RIGHT_MID, -10, 0);
+  lv_obj_t *lblNext = lv_label_create(btnNext);
+  lv_label_set_text(lblNext, LV_SYMBOL_RIGHT);
+  lv_obj_center(lblNext);
+  lv_obj_add_event_cb(btnNext, nextAuto, LV_EVENT_CLICKED, NULL);
 
-  // Pose label (bottom)
-  label_pose = lv_label_create(screen);
-  lv_label_set_text(label_pose, "X: 0.00  Y: 0.00  θ: 0.00");
-  lv_obj_align(label_pose, LV_ALIGN_BOTTOM_MID, 0, -10);
+  // ---- Team logo image ----
+  lv_obj_t *imgLogo = lv_image_create(screen);
+  lv_image_set_src(imgLogo, &team_logo);
+  lv_obj_align(imgLogo, LV_ALIGN_TOP_RIGHT, 30, -30);
+  lv_image_set_scale(imgLogo, 128);
 
-  // Start pose-update background task
-  pros::Task poseTask(updatePoseTask, NULL, TASK_PRIORITY_DEFAULT,
-                      TASK_STACK_DEPTH_DEFAULT, "Pose Update Task");
+  // ---- Dog image ----
+  lv_obj_t *imgDog = lv_image_create(screen);
+  lv_image_set_src(imgDog, &sparrow);
+  lv_obj_align(imgDog, LV_ALIGN_TOP_LEFT, -30, -30);
+  lv_image_set_scale(imgDog, 128);
+
+  // Pose display
+  labelPose = lv_label_create(screen);
+  lv_obj_align(labelPose, LV_ALIGN_BOTTOM_MID, 0, -15);
+
+  // Timer to update pose
+  poseTimer = lv_timer_create(updatePose, 100, NULL);
+
+  // Show initial info
+  updateAutoDisplay();
 }
 
-// ---------- Pose update task ----------
-void updatePoseTask(void *) {
-  while (true) {
-    lemlib::Pose pose = chassis.getPose();
-    char buf[64];
-    snprintf(buf, sizeof(buf), "X: %.2f  Y: %.2f  θ: %.2f", pose.x, pose.y,
-             pose.theta);
-    lv_label_set_text(label_pose, buf);
-    pros::delay(100); // 10 Hz updates
-  }
-}
+// Runs selected autonomous
+void runSelectedAuton() { autos[currentAutoIndex].routine(); }
 
-// ---------- Standard PROS callbacks ----------
+// =================== PROS CALLBACKS ===================
+
+// This runs once when the program starts
 void initialize() {
-  chassis.calibrate();
-  createAutonPage();
+  autonSelectorInit(); // Build our selector UI
 }
 
-void autonomous() {
-  autonFunctions[selectedAuton](); // <-- run selected auton!
-}
+// This runs during autonomous
+void autonomous() { runSelectedAuton(); }
 
+// This runs during driver control
 void opcontrol() {
   while (true) {
     pros::delay(10);
