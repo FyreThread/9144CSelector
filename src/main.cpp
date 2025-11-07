@@ -1,9 +1,11 @@
 #include "main.h" // IWYU pragma: keep
 #include "devices.h"
 #include "lemlib/api.hpp" // IWYU pragma: keep
+#include "pros/motors.h"
 
 extern const lv_image_dsc_t team_logo;
 extern const lv_image_dsc_t sparrow;
+extern const lv_image_dsc_t hopper;
 
 // =================== AUTON SELECTOR CODE ===================
 
@@ -103,6 +105,12 @@ void autonSelectorInit() {
   lv_obj_align(imgDog, LV_ALIGN_TOP_LEFT, -30, -30);
   lv_image_set_scale(imgDog, 128);
 
+  // ---- Hopper image ----
+  lv_obj_t *imgHopper = lv_image_create(screen);
+  lv_image_set_src(imgHopper, &hopper);
+  lv_obj_align(imgHopper, LV_ALIGN_TOP_MID, 0, 0);
+  lv_image_set_scale(imgHopper, 128);
+
   // Pose display
   labelPose = lv_label_create(screen);
   lv_obj_align(labelPose, LV_ALIGN_BOTTOM_MID, 0, -15);
@@ -129,7 +137,42 @@ void autonomous() { runSelectedAuton(); }
 
 // This runs during driver control
 void opcontrol() {
+  chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
+  pros::Controller master(pros::E_CONTROLLER_MASTER);
   while (true) {
-    pros::delay(10);
+    if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
+      stage1.move(127);
+      stage2.move(-127);
+    } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
+      stage1.move(-127);
+      stage2.move(127);
+    } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+      // Top Score
+      stage1.move(127);
+      stage2.move(-127);
+      stage3.move(-127);
+    } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+      // Middle Score
+      stage1.move(127);
+      stage2.move(-127);
+      stage3.move(100);
+    } else {
+      // Stop when nothing is being pressed
+      stage1.move(0);
+      stage2.move(0);
+      stage3.move(0);
+    }
+
+    
+    int leftY = controller.get_analog(
+        pros::E_CONTROLLER_ANALOG_LEFT_Y); // Get left joystick Y-axis value
+    int leftX = controller.get_analog(
+        pros::E_CONTROLLER_ANALOG_LEFT_X); // Get left joystick X-axis value
+    int rightX = controller.get_analog(
+        pros::E_CONTROLLER_ANALOG_RIGHT_X); // Get right joystick X-axis value
+
+    chassis.arcade(leftY, rightX * 0.9);
+
+    pros::delay(20);
   }
 }
