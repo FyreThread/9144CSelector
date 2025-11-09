@@ -1,7 +1,11 @@
 #include "main.h" // IWYU pragma: keep
 #include "devices.h"
 #include "lemlib/api.hpp" // IWYU pragma: keep
+#include "pros/adi.h"
+#include "pros/misc.h"
+#include "pros/misc.hpp"
 #include "pros/motors.h"
+#include "pros/rtos.hpp"
 
 extern const lv_image_dsc_t team_logo;
 extern const lv_image_dsc_t sparrow;
@@ -13,7 +17,12 @@ extern const lv_image_dsc_t hopper;
 void leftSideAuto() { /* your auton code */ }
 void rightSideAuto() { /* your auton code */ }
 void skillsAuto() { /* your auton code */ }
-void doNothing() {}
+void doNothing() {
+  controller.clear();
+  controller.print(0, 0, "Ran");
+  chassis.turnToHeading(90, 10000);
+  pros::delay(10000);
+}
 
 // Struct for autos
 struct AutoRoutine {
@@ -36,7 +45,8 @@ int currentAutoIndex = 0;
 lv_obj_t *labelTitle;
 lv_obj_t *labelDesc;
 lv_obj_t *labelPose;
-lv_timer_t *poseTimer;
+
+// =================== AUTON DISPLAY FUNCTIONS ===================
 
 // Updates the text for the current auto
 void updateAutoDisplay() {
@@ -45,12 +55,18 @@ void updateAutoDisplay() {
   lv_label_set_text(labelDesc, autos[currentAutoIndex].description);
 }
 
-// Called every 100ms to update chassis position
-void updatePose(lv_timer_t *timer) {
-  (void)timer;
-  lv_label_set_text_fmt(labelPose, "X: %.2f   Y: %.2f   Theta: %.2f°",
-                        chassis.getPose().x, chassis.getPose().y,
-                        chassis.getPose().theta);
+// LVGL pose display task
+void poseDisplayTask() {
+  while (true) {
+    lemlib::Pose pose = chassis.getPose();
+
+    char buffer[64];
+    snprintf(buffer, sizeof(buffer), "X: %.1f  Y: %.1f  θ: %.1f°", pose.x,
+             pose.y, pose.theta);
+
+    lv_label_set_text(labelPose, buffer);
+    pros::delay(50);
+  }
 }
 
 // Move between autos with wrap-around
@@ -93,7 +109,7 @@ void autonSelectorInit() {
   lv_obj_center(lblNext);
   lv_obj_add_event_cb(btnNext, nextAuto, LV_EVENT_CLICKED, NULL);
 
-  // ---- Team logo image ----
+  // ---- Team logo ----
   lv_obj_t *imgLogo = lv_image_create(screen);
   lv_image_set_src(imgLogo, &team_logo);
   lv_obj_align(imgLogo, LV_ALIGN_TOP_RIGHT, 30, -30);
@@ -111,35 +127,49 @@ void autonSelectorInit() {
   lv_obj_align(imgHopper, LV_ALIGN_TOP_MID, 0, 0);
   lv_image_set_scale(imgHopper, 128);
 
-  // Pose display
+  // ---- Pose label ----
   labelPose = lv_label_create(screen);
   lv_obj_align(labelPose, LV_ALIGN_BOTTOM_MID, 0, -15);
-
-  // Timer to update pose
-  poseTimer = lv_timer_create(updatePose, 100, NULL);
+  lv_label_set_text(labelPose, "X: 0.0  Y: 0.0  θ: 0.0°");
 
   // Show initial info
   updateAutoDisplay();
 }
 
-// Runs selected autonomous
+// =================== CORE PROS FUNCTIONS ===================
+
+// Run selected autonomous
 void runSelectedAuton() { autos[currentAutoIndex].routine(); }
 
-// =================== PROS CALLBACKS ===================
-
-// This runs once when the program starts
 void initialize() {
-  autonSelectorInit(); // Build our selector UI
+  chassis.calibrate();
+  pros::delay(200);
+  autonSelectorInit();                     // Build selector UI
+  pros::Task displayTask(poseDisplayTask); // start LVGL pose updater
+
+  // Initial pneumatic setup
+  hood.set_value(LOW);
+  lW.set_value(LOW);
+  intakeStopper.set_value(LOW);
 }
 
-// This runs during autonomous
+// Toggle variables
+bool stopperToggled = false;
+bool lastBState = false;
+bool lWToggled = false;
+bool lastDownState = false;
+
 void autonomous() { runSelectedAuton(); }
 
-// This runs during driver control
 void opcontrol() {
   chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
   pros::Controller master(pros::E_CONTROLLER_MASTER);
+
   while (true) {
+    bool currentBState = master.get_digital(pros::E_CONTROLLER_DIGITAL_B);
+    bool currentDownState = master.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN);
+
+    // Intake/stage logic
     if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
       stage1.move(127);
       stage2.move(-127);
@@ -147,31 +177,50 @@ void opcontrol() {
       stage1.move(-127);
       stage2.move(127);
     } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
-      // Top Score
       stage1.move(127);
       stage2.move(-127);
       stage3.move(-127);
     } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
-      // Middle Score
       stage1.move(127);
       stage2.move(-127);
       stage3.move(100);
     } else {
-      // Stop when nothing is being pressed
       stage1.move(0);
       stage2.move(0);
       stage3.move(0);
     }
 
-    
-    int leftY = controller.get_analog(
-        pros::E_CONTROLLER_ANALOG_LEFT_Y); // Get left joystick Y-axis value
-    int leftX = controller.get_analog(
-        pros::E_CONTROLLER_ANALOG_LEFT_X); // Get left joystick X-axis value
-    int rightX = controller.get_analog(
-        pros::E_CONTROLLER_ANALOG_RIGHT_X); // Get right joystick X-axis value
+    // Hood control
+    if (master.get_digital(pros::E_CONTROLLER_DIGITAL_X))
+      hood.set_value(HIGH);
+    else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_Y))
+      hood.set_value(LOW);
 
+    // Toggle intake stopper
+    if (currentBState && !lastBState) {
+      stopperToggled = !stopperToggled;
+      intakeStopper.set_value(stopperToggled);
+    }
+
+    // Toggle left wing
+    if (currentDownState && !lastDownState) {
+      lWToggled = !lWToggled;
+      lW.set_value(lWToggled);
+    }
+
+    lastBState = currentBState;
+    lastDownState = currentDownState;
+
+    // Drivetrain control
+    int leftY = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+    int rightX = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
     chassis.arcade(leftY, rightX * 0.9);
+
+    if (master.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)) {
+      if (!pros::competition::is_connected()) {
+        autonomous();
+      }
+    }
 
     pros::delay(20);
   }
