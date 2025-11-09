@@ -11,18 +11,20 @@ extern const lv_image_dsc_t team_logo;
 extern const lv_image_dsc_t sparrow;
 extern const lv_image_dsc_t hopper;
 
+double chassis_kD = 2.0;
+
+
 // =================== AUTON SELECTOR CODE ===================
 
 // Define autonomous routines
-void leftSideAuto() { /* your auton code */ }
-void rightSideAuto() { /* your auton code */ }
-void skillsAuto() { /* your auton code */ }
-void doNothing() {
-  controller.clear();
-  controller.print(0, 0, "Ran");
+void route1() {
   chassis.turnToHeading(90, 10000);
   pros::delay(10000);
 }
+
+void rightSideAuto() { /* your auton code */ }
+void skillsAuto() { /* your auton code */ }
+void doNothing() {}
 
 // Struct for autos
 struct AutoRoutine {
@@ -33,7 +35,7 @@ struct AutoRoutine {
 
 // Define all autos here
 AutoRoutine autos[] = {
-    {"Left Side", "Scores preload and rushes center stake", leftSideAuto},
+    {"Tooning", "Turn 90 to tune pid", route1},
     {"Right Side", "Scores preload and grabs match load", rightSideAuto},
     {"Skills", "Full field skills run", skillsAuto},
     {"Do Nothing", "Literally does nothing", doNothing}};
@@ -170,17 +172,21 @@ void opcontrol() {
     bool currentDownState = master.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN);
 
     // Intake/stage logic
-    if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
+    if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
+      intakeStopper.set_value(false);
       stage1.move(127);
       stage2.move(-127);
-    } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
+    } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
+      intakeStopper.set_value(false);
       stage1.move(-127);
       stage2.move(127);
     } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+      intakeStopper.set_value(true);
       stage1.move(127);
       stage2.move(-127);
       stage3.move(-127);
     } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+      intakeStopper.set_value(true);
       stage1.move(127);
       stage2.move(-127);
       stage3.move(100);

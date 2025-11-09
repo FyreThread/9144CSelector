@@ -4,8 +4,8 @@
 #include "pros/adi.hpp"
 #include "pros/misc.hpp"
 
-inline pros::Motor stage1(1);
-inline pros::Motor stage2(12);
+inline pros::Motor stage1(12);
+inline pros::Motor stage2(11);
 inline pros::Motor stage3(5);
 
 inline pros::adi::DigitalOut hood('F');
@@ -42,13 +42,13 @@ inline lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder,
                                                        -2.75);
 
 // Setup odometry sensors
-inline lemlib::OdomSensors sensors(
-    &vertical_tracking_wheel,   // Vertical tracking wheel 1
-    nullptr,                    // Vertical tracking wheel 2 (not used)
-    &horizontal_tracking_wheel, // Horizontal tracking wheel 1 (not used)
-    nullptr,                    // Horizontal tracking wheel 2 (not used)
-    &imu                        // Inertial sensor
-);
+inline lemlib::OdomSensors
+    sensors(&vertical_tracking_wheel,   // Vertical tracking wheel 1
+            nullptr,                    // Vertical tracking wheel 2 (not used)
+            &horizontal_tracking_wheel, // Horizontal tracking wheel 1
+            nullptr, // Horizontal tracking wheel 2 (not used)
+            &imu     // Inertial sensor
+    );
 
 // Define PID controllers
 inline lemlib::ControllerSettings
@@ -64,11 +64,11 @@ inline lemlib::ControllerSettings
     );
 
 inline lemlib::ControllerSettings
-    angular_controller(2.95, // Proportional gain (kP)
+    angular_controller(2.1,  // Proportional gain (kP)
                        0.00, // Integral gain (kI)
-                       23,   // Derivative gain (kD)
+                       10,   // Derivative gain (kD)
                        0,    // Anti windup
-                       .8,   // Small error range, in degrees
+                       0,    // Small error range, in degrees
                        0,    // Small error range timeout, in milliseconds
                        0,    // Large error range, in degrees
                        0,    // Large error range timeout, in milliseconds
