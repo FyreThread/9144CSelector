@@ -8,21 +8,43 @@
 #include "pros/rtos.hpp"
 
 extern const lv_image_dsc_t team_logo;
-extern const lv_image_dsc_t sparrow;
-extern const lv_image_dsc_t hopper;
-
-double chassis_kD = 2.0;
-
+// extern const lv_image_dsc_t sparrow;
+// extern const lv_image_dsc_t hopper;
 
 // =================== AUTON SELECTOR CODE ===================
 
 // Define autonomous routines
 void route1() {
-  chassis.turnToHeading(90, 10000);
-  pros::delay(10000);
+  chassis.setPose(0, 0, 0);
+  chassis.moveToPose(0, -34, 0, 1400, {.forwards = false});
+  chassis.waitUntilDone();
+  stage3.move_relative(-1000, 100);
+  pros::delay(150);
+  chassis.moveToPose(0, -26, 0, 750);
+  chassis.waitUntilDone();
+  chassis.turnToHeading(90, 500);
+  chassis.waitUntilDone();
+  chassis.moveToPose(16, -26, 90, 1500, {.maxSpeed = 45});
+  intakeStopper.set_value(false);
+  stage1.move(127);
+  stage2.move(-127);
+  chassis.waitUntilDone();
+  chassis.turnToHeading(-90, 650);
+  chassis.waitUntilDone();
+  chassis.moveToPose(-29, -26, -90, 1500);
+  chassis.waitUntilDone();
+
+  if (!pros::competition::is_connected()) {
+    pros::delay(0);
+  }
 }
 
-void rightSideAuto() { /* your auton code */ }
+void route2() {
+  chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
+  chassis.setPose(0, 0, 0);
+  chassis.moveToPose(0, 24, 0, 5000);
+  chassis.waitUntilDone();
+}
 void skillsAuto() { /* your auton code */ }
 void doNothing() {}
 
@@ -35,8 +57,8 @@ struct AutoRoutine {
 
 // Define all autos here
 AutoRoutine autos[] = {
-    {"Tooning", "Turn 90 to tune pid", route1},
-    {"Right Side", "Scores preload and grabs match load", rightSideAuto},
+    {"SAWP", "Solo Auto Win Point", route1},
+    {"Right Side", "Scores preload and grabs match load", route2},
     {"Skills", "Full field skills run", skillsAuto},
     {"Do Nothing", "Literally does nothing", doNothing}};
 
@@ -117,7 +139,7 @@ void autonSelectorInit() {
   lv_obj_align(imgLogo, LV_ALIGN_TOP_RIGHT, 30, -30);
   lv_image_set_scale(imgLogo, 128);
 
-  // ---- Dog image ----
+  /*// ---- Dog image ----
   lv_obj_t *imgDog = lv_image_create(screen);
   lv_image_set_src(imgDog, &sparrow);
   lv_obj_align(imgDog, LV_ALIGN_TOP_LEFT, -30, -30);
@@ -127,7 +149,7 @@ void autonSelectorInit() {
   lv_obj_t *imgHopper = lv_image_create(screen);
   lv_image_set_src(imgHopper, &hopper);
   lv_obj_align(imgHopper, LV_ALIGN_TOP_MID, 0, 0);
-  lv_image_set_scale(imgHopper, 128);
+  lv_image_set_scale(imgHopper, 128);*/
 
   // ---- Pose label ----
   labelPose = lv_label_create(screen);
@@ -169,7 +191,7 @@ void opcontrol() {
 
   while (true) {
     bool currentBState = master.get_digital(pros::E_CONTROLLER_DIGITAL_B);
-    bool currentDownState = master.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN);
+    bool currentDownState = master.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT);
 
     // Intake/stage logic
     if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
@@ -194,6 +216,21 @@ void opcontrol() {
       stage1.move(0);
       stage2.move(0);
       stage3.move(0);
+    }
+
+    // Show pose on controller when UP + RIGHT are both pressed
+    if (master.get_digital(pros::E_CONTROLLER_DIGITAL_UP) &&
+        master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
+
+      lemlib::Pose pose = chassis.getPose();
+
+      master.clear_line(0);
+      master.clear_line(1);
+      master.clear_line(2);
+
+      master.print(0, 0, "X: %.1f", pose.x);
+      master.print(1, 0, "Y: %.1f", pose.y);
+      master.print(2, 0, "T: %.1f", pose.theta);
     }
 
     // Hood control
@@ -222,7 +259,7 @@ void opcontrol() {
     int rightX = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
     chassis.arcade(leftY, rightX * 0.9);
 
-    if (master.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)) {
+    if (master.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
       if (!pros::competition::is_connected()) {
         autonomous();
       }
