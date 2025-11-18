@@ -6,9 +6,9 @@
 
 inline pros::Controller master(pros::E_CONTROLLER_MASTER);
 
-inline pros::Motor stage1(12);
-inline pros::Motor stage2(11);
-inline pros::Motor stage3(5);
+inline pros::Motor stage1(10);
+inline pros::Motor stage2(9);
+inline pros::Motor stage3(7);
 
 inline pros::adi::DigitalOut hood('F');
 inline pros::adi::DigitalOut lW('D');
@@ -19,11 +19,11 @@ inline pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 // Define left and right motor groups for the drivetrain
 inline pros::MotorGroup
-    left_motors({-10, -9, -8},
-                pros::MotorGearset::blue); // Left motors on ports -2, 3, -4
+    left_motors({-1, -2, -3},
+                pros::MotorGearset::blue); // Left motors on ports -1, -2, -3
 inline pros::MotorGroup
-    right_motors({18, 19, 20},
-                 pros::MotorGearset::blue); // Right motors on ports 7, -9, 10
+    right_motors({4, 5, 6},
+                 pros::MotorGearset::blue); // Right motors on ports 4, 5, 6
 
 // Define the drivetrain
 inline lemlib::Drivetrain drivetrain(&left_motors, &right_motors, 12.7,

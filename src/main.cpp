@@ -17,6 +17,7 @@
 // Define autonomous routines
 void route1() {
   chassis.setPose(0, 0, 0);
+  hood.set_value(LOW);
   chassis.moveToPose(0, -34, 0, 1200, {.forwards = false});
   chassis.waitUntilDone();
   stage3.move_relative(-1500, 120);
@@ -72,6 +73,7 @@ void route1() {
 void route2() {
   chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
   chassis.setPose(0, 0, 0);
+  hood.set_value(LOW);
   chassis.moveToPose(0, -34, 0, 1200, {.forwards = false});
   chassis.waitUntilDone();
   stage3.move_relative(-1500, 120);
@@ -258,7 +260,7 @@ void initialize() {
   pros::Task controllerTask(displayPoseTask);
 
   // Initial pneumatic setup
-  hood.set_value(LOW);
+  hood.set_value(HIGH);
   lW.set_value(LOW);
   intakeStopper.set_value(LOW);
   intakeStopper2.set_value(LOW);
