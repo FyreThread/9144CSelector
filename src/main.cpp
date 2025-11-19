@@ -129,7 +129,7 @@ struct AutoRoutine {
 };
 
 // Define all autos here
-AutoRoutine autos[] = {{"SAWP", "Solo Auto Win Point", route1},
+AutoRoutine autos[] = {{"Left", "Description of scoring here", route2},
                        {"Left Side", "Lefttttttttt", route2},
                        {"Skills", "Full field skills run", skillsAuto},
                        {"Do Nothing", "Literally does nothing", doNothing}};
@@ -157,7 +157,7 @@ void poseDisplayTask() {
     lemlib::Pose pose = chassis.getPose();
 
     char buffer[64];
-    snprintf(buffer, sizeof(buffer), "X: %.1f  Y: %.1f  θ: %.1f°", pose.x,
+    snprintf(buffer, sizeof(buffer), "X: %.1f  Y: %.1f  T: %.1f°", pose.x,
              pose.y, pose.theta);
 
     lv_label_set_text(labelPose, buffer);

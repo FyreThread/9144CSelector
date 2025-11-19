@@ -30,11 +30,11 @@ inline lemlib::Drivetrain drivetrain(&left_motors, &right_motors, 12.7,
                                      lemlib::Omniwheel::NEW_325, 450, 1.8);
 
 // Define the inertial sensor
-inline pros::Imu imu(4); // Inertial sensor on port 5
+inline pros::Imu imu(18); // Inertial sensor on port 4
 
 // Define the vertical encoder
-inline pros::Rotation vertical_encoder(6);    // Optical shaft encoder on port
-inline pros::Rotation horizontal_encoder(-7); // Optical shaft encoder on port
+inline pros::Rotation vertical_encoder(20);    // Optical shaft encoder on port
+inline pros::Rotation horizontal_encoder(-19); // Optical shaft encoder on port
 
 // Define the vertical tracking wheel
 inline lemlib::TrackingWheel
