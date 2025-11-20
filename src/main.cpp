@@ -1,7 +1,8 @@
+#include <cmath>
 #define LEMLIB_USE_SCREEN false
-#include "main.h" // IWYU pragma: keep
 #include "devices.h"
 #include "lemlib/api.hpp" // IWYU pragma: keep
+#include "main.h"         // IWYU pragma: keep
 #include "pros/adi.h"
 #include "pros/misc.h"
 #include "pros/misc.hpp"
@@ -15,6 +16,7 @@
 // =================== AUTON SELECTOR CODE ===================
 
 // Define autonomous routines
+// SAWP
 void route1() {
   chassis.setPose(0, 0, 0);
   hood.set_value(LOW);
@@ -24,7 +26,6 @@ void route1() {
   pros::delay(160);
   chassis.moveToPose(19.8, -25.7, 66.2, 800);
   intakeStopper.set_value(false);
-  intakeStopper2.set_value(false);
   stage1.move(127);
   stage2.move(-127);
   chassis.waitUntilDone();
@@ -36,7 +37,6 @@ void route1() {
   chassis.moveToPose(45, -20, -2, 1500, {.forwards = false});
   chassis.waitUntilDone();
   intakeStopper.set_value(true);
-  intakeStopper2.set_value(true);
   stage1.move(-127);
   stage2.move(127);
   stage3.move(127);
@@ -49,7 +49,6 @@ void route1() {
   chassis.waitUntilDone();
   lW.set_value(LOW);
   intakeStopper.set_value(false);
-  intakeStopper2.set_value(false);
   chassis.moveToPose(-29.7, -25.5, -109, 2500);
   chassis.waitUntilDone();
   chassis.turnToHeading(-225, 500);
@@ -57,7 +56,6 @@ void route1() {
   chassis.moveToPose(-21.5, -36.2, -225, 1000);
   chassis.waitUntilDone();
   intakeStopper.set_value(false);
-  intakeStopper2.set_value(false);
   stage1.move(-127);
   stage2.move(127);
   pros::delay(750);
@@ -70,54 +68,62 @@ void route1() {
   }
 }
 
+// Left Side
 void route2() {
-  chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
   chassis.setPose(0, 0, 0);
-  hood.set_value(LOW);
-  chassis.moveToPose(0, -34, 0, 1200, {.forwards = false});
-  chassis.waitUntilDone();
-  stage3.move_relative(-1500, 120);
-  pros::delay(160);
-  chassis.moveToPose(19.8, -25.7, 66.2, 800);
+  hood.set_value(HIGH);
   intakeStopper.set_value(false);
-  intakeStopper2.set_value(false);
   stage1.move(127);
   stage2.move(-127);
+  chassis.moveToPoint(0, 3, 125);
   chassis.waitUntilDone();
-  pros::delay(100);
+  chassis.turnToHeading(-38.7, 250);
+  chassis.waitUntilDone();
+  chassis.moveToPose(-15.5, 26, -39, 1500);
+  chassis.waitUntilDone();
+  chassis.moveToPose(-35, 43, -82.2, 2250);
+  chassis.waitUntilDone();
+  chassis.moveToPose(-6.7, 39.3, -84.4, 1250, {.forwards = false});
+  chassis.waitUntilDone();
+  chassis.turnToHeading(-112, 250);
+  chassis.waitUntilDone();
+  stage2.move_relative(100, 127);
+  pros::delay(50);
+  intakeStopper.set_value(true);
+
+  while (dTop.get_distance() > 90) {
+    stage3.move(-110);
+    stage1.move(105);
+    stage2.move(-105);
+    pros::delay(10);
+  }
+
+  stage1.move(0);
+  stage2.move_relative(600, 127);
+  pros::delay(150);
+  chassis.turnToHeading(-137.5, 250);
+  chassis.waitUntilDone();
+  chassis.moveToPose(-40.9, 2.6, -136.5, 1500, {.maxSpeed = 80});
+  stage1.move(127);
+  stage2.move(-127);
+  stage3.move(0);
+  intakeStopper.set_value(false);
   lW.set_value(HIGH);
-  chassis.turnToHeading(110.2, 500);
   chassis.waitUntilDone();
-  lW.set_value(LOW);
-  chassis.moveToPose(39.8, -41.2, 97, 2000);
+  chassis.turnToHeading(-180, 500);
   chassis.waitUntilDone();
-  chassis.moveToPose(17.6, -35.7, 107.2, 1250, {.forwards = false});
+  chassis.moveToPoint(-41.7, -11, 2000, {.maxSpeed = 60});
   chassis.waitUntilDone();
-  chassis.turnToHeading(31.7, 500);
-  chassis.waitUntilDone();
-  lW.set_value(true);
-  chassis.moveToPose(36.4, -10.6, 40, 1000);
-  chassis.waitUntilDone();
-  chassis.moveToPose(45, 15, -1, 2750);
-  chassis.waitUntilDone();
-  chassis.moveToPose(45, -20, -2, 1750, {.forwards = false});
+  chassis.moveToPose(-43.7, 20, -180, 1500, {.forwards = false});
   chassis.waitUntilDone();
   intakeStopper.set_value(true);
-  intakeStopper2.set_value(true);
-  stage1.move(-127);
-  stage2.move(127);
-  stage3.move(127);
-  pros::delay(125);
+  hood.set_value(true);
   stage1.move(127);
   stage2.move(-127);
   stage3.move(-127);
-  pros::delay(1500);
-  chassis.moveToPose(45, -7.4, 0, 1000);
-  chassis.waitUntilDone();
-  hood.set_value(HIGH);
-  chassis.moveToPose(45, -22, -2, 1750, {.forwards = false, .minSpeed = 90});
-  chassis.waitUntilDone();
+  pros::delay(2000);
 }
+
 void skillsAuto() { /* your auton code */ }
 void doNothing() {}
 
@@ -154,11 +160,16 @@ void updateAutoDisplay() {
 // LVGL pose display task
 void poseDisplayTask() {
   while (true) {
-    lemlib::Pose pose = chassis.getPose();
+    lemlib::Pose pose = chassis.getPose(); // read once
+
+    // USE THIS COPY TO DETECT NaN
+    if (std::isnan(pose.theta) || std::isnan(pose.x) || std::isnan(pose.y)) {
+      master.rumble(".......");
+    }
 
     char buffer[64];
-    snprintf(buffer, sizeof(buffer), "X: %.1f  Y: %.1f  T: %.1f°", pose.x,
-             pose.y, pose.theta);
+    snprintf(buffer, sizeof(buffer), "X: %.1f  Y: %.1f  T: %.1f°  Dist: %i",
+             pose.x, pose.y, pose.theta, dTop.get_distance());
 
     lv_label_set_text(labelPose, buffer);
     pros::delay(50);
@@ -255,15 +266,15 @@ void displayPoseTask() {
 void initialize() {
   chassis.calibrate();
   pros::delay(200);
+
   autonSelectorInit();                     // Build selector UI
   pros::Task displayTask(poseDisplayTask); // start LVGL pose updater
   pros::Task controllerTask(displayPoseTask);
 
   // Initial pneumatic setup
-  hood.set_value(HIGH);
+  hood.set_value(false);
   lW.set_value(LOW);
   intakeStopper.set_value(LOW);
-  intakeStopper2.set_value(LOW);
 }
 
 // Toggle variables
@@ -271,6 +282,8 @@ bool stopperToggled = false;
 bool lastBState = false;
 bool lWToggled = false;
 bool lastDownState = false;
+bool hoodToggled = false;
+bool lastAState = false;
 
 void autonomous() { runSelectedAuton(); }
 
@@ -279,28 +292,28 @@ void opcontrol() {
 
   while (true) {
     bool currentBState = master.get_digital(pros::E_CONTROLLER_DIGITAL_B);
+    bool currentAState = master.get_digital(pros::E_CONTROLLER_DIGITAL_A);
+
     bool currentDownState = master.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT);
 
     // Intake/stage logic
     if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
       intakeStopper.set_value(false);
-      intakeStopper2.set_value(false);
       stage1.move(127);
       stage2.move(-127);
     } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
       intakeStopper.set_value(false);
-      intakeStopper2.set_value(false);
       stage1.move(-127);
       stage2.move(127);
     } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
       intakeStopper.set_value(true);
-      intakeStopper2.set_value(true);
+      hood.set_value(true);
       stage1.move(127);
       stage2.move(-127);
       stage3.move(-127);
     } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
       intakeStopper.set_value(true);
-      intakeStopper2.set_value(true);
+      hood.set_value(true);
       stage1.move(127);
       stage2.move(-127);
       stage3.move(100);
@@ -310,25 +323,24 @@ void opcontrol() {
       stage3.move(0);
     }
 
-    // Hood control
-    if (master.get_digital(pros::E_CONTROLLER_DIGITAL_A))
-      hood.set_value(HIGH);
-    else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_X))
-      hood.set_value(LOW);
-
     // Toggle intake stopper
     if (currentBState && !lastBState) {
       stopperToggled = !stopperToggled;
       intakeStopper.set_value(stopperToggled);
-      intakeStopper2.set_value(stopperToggled);
     }
 
-    // Toggle left wing
+    // Toggle intake stopper
+    if (currentAState && !lastAState) {
+      hoodToggled = !hoodToggled;
+      hood.set_value(hoodToggled);
+    }
+
+    // Toggle lilWill
     if (currentDownState && !lastDownState) {
       lWToggled = !lWToggled;
       lW.set_value(lWToggled);
     }
-
+    lastAState = currentAState;
     lastBState = currentBState;
     lastDownState = currentDownState;
 

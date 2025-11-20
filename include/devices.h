@@ -2,18 +2,20 @@
 #include "lemlib/chassis/chassis.hpp"
 #include "lemlib/chassis/trackingWheel.hpp"
 #include "pros/adi.hpp"
+#include "pros/distance.hpp"
 #include "pros/misc.hpp"
 
 inline pros::Controller master(pros::E_CONTROLLER_MASTER);
+
+inline pros::Distance dTop(11);
 
 inline pros::Motor stage1(10);
 inline pros::Motor stage2(9);
 inline pros::Motor stage3(7);
 
-inline pros::adi::DigitalOut hood('F');
-inline pros::adi::DigitalOut lW('D');
-inline pros::adi::DigitalOut intakeStopper('H');
-inline pros::adi::DigitalOut intakeStopper2('G');
+inline pros::adi::DigitalOut hood('C', false);
+inline pros::adi::DigitalOut lW('B', false);
+inline pros::adi::DigitalOut intakeStopper('A', false);
 
 inline pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
