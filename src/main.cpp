@@ -75,52 +75,72 @@ void route2() {
   intakeStopper.set_value(false);
   stage1.move(127);
   stage2.move(-127);
-  chassis.moveToPoint(0, 3, 125);
+  chassis.moveToPoint(-2.5, 3, 225);
   chassis.waitUntilDone();
   chassis.turnToHeading(-38.7, 250);
   chassis.waitUntilDone();
-  chassis.moveToPose(-15.5, 26, -39, 1500);
+  chassis.moveToPose(-14.8, 25.1, -37, 1100,
+                     {.maxSpeed = 100, .earlyExitRange = 4.2});
   chassis.waitUntilDone();
-  chassis.moveToPose(-35, 43, -82.2, 2250);
+  lW.set_value(HIGH);
+  chassis.moveToPose(-14.8, 25.1, -37, 700, {.maxSpeed = 65});
   chassis.waitUntilDone();
-  chassis.moveToPose(-6.7, 39.3, -84.4, 1250, {.forwards = false});
+  chassis.turnToHeading(-134.62, 600);
   chassis.waitUntilDone();
-  chassis.turnToHeading(-112, 250);
+  chassis.moveToPose(-4.8, 38.4, -135., 1600,
+                     {.forwards = false, .maxSpeed = 55});
   chassis.waitUntilDone();
-  stage2.move_relative(100, 127);
-  pros::delay(50);
+  pros::delay(155);
+  stage1.move(-127);
+  stage2.move(127);
+  stage3.move(-50);
+  pros::delay(70);
   intakeStopper.set_value(true);
-
-  while (dTop.get_distance() > 90) {
-    stage3.move(-110);
-    stage1.move(105);
-    stage2.move(-105);
-    pros::delay(10);
-  }
-
-  stage1.move(0);
-  stage2.move_relative(600, 127);
-  pros::delay(150);
-  chassis.turnToHeading(-137.5, 250);
-  chassis.waitUntilDone();
-  chassis.moveToPose(-40.9, 2.6, -136.5, 1500, {.maxSpeed = 80});
+  pros::delay(70);
   stage1.move(127);
-  stage2.move(-127);
+  stage2.move(-125);
+  stage3.move(118);
+  pros::delay(1360);
+  stage1.move(0);
+  stage2.move(0);
   stage3.move(0);
   intakeStopper.set_value(false);
-  lW.set_value(HIGH);
+  chassis.moveToPose(-40.6, -4.8, -139.9, 1800);
   chassis.waitUntilDone();
-  chassis.turnToHeading(-180, 500);
+  stage1.move(127);
+  stage2.move(-127);
   chassis.waitUntilDone();
-  chassis.moveToPoint(-41.7, -11, 2000, {.maxSpeed = 60});
+  chassis.turnToHeading(-180, 300);
   chassis.waitUntilDone();
-  chassis.moveToPose(-43.7, 20, -180, 1500, {.forwards = false});
+  hood.set_value(HIGH);
+  chassis.moveToPoint(-43.7, -12.27, 1090);
   chassis.waitUntilDone();
+  chassis.moveToPose(-42.5, 19, -180, 1650, {.forwards = false});
+  chassis.waitUntilDone();
+  pros::delay(250);
+  stage1.move(0);
+  stage2.move(0);
+  stage3.move(0);
   intakeStopper.set_value(true);
-  hood.set_value(true);
+  pros::delay(150);
   stage1.move(127);
   stage2.move(-127);
   stage3.move(-127);
+  pros::delay(1550);
+  chassis.waitUntilDone();
+  chassis.moveToPose(-42.85, 6, 180, 900, {.maxSpeed = 60});
+  chassis.waitUntilDone();
+  hood.set_value(LOW);
+  intakeStopper.set_value(false);
+  stage1.move(0);
+  stage2.move(0);
+  stage3.move(0);
+  chassis.moveToPoint(-42.5, 18.6, 700,
+                      {.forwards = false, .maxSpeed = 100, .minSpeed = 90});
+  chassis.waitUntilDone();
+  pros::delay(100);
+  hood.set_value(HIGH);
+
   pros::delay(2000);
 }
 
@@ -284,6 +304,7 @@ bool lWToggled = false;
 bool lastDownState = false;
 bool hoodToggled = false;
 bool lastAState = false;
+bool yState = false;
 
 void autonomous() { runSelectedAuton(); }
 
@@ -295,6 +316,7 @@ void opcontrol() {
     bool currentAState = master.get_digital(pros::E_CONTROLLER_DIGITAL_A);
 
     bool currentDownState = master.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT);
+    bool currentYState = master.get_digital(pros::E_CONTROLLER_DIGITAL_Y);
 
     // Intake/stage logic
     if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
@@ -340,6 +362,13 @@ void opcontrol() {
       lWToggled = !lWToggled;
       lW.set_value(lWToggled);
     }
+
+    // Test for deadzones
+    if (master.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) {
+      stage1.move(20);
+      stage2.move(-20);
+    }
+
     lastAState = currentAState;
     lastBState = currentBState;
     lastDownState = currentDownState;
