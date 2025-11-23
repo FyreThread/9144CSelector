@@ -19,8 +19,27 @@
 // SAWP
 void route1() {
   chassis.setPose(0, 0, 0);
-  hood.set_value(LOW);
-  chassis.moveToPose(0, -34, 0, 1200, {.forwards = false});
+  hood.set_value(HIGH);
+  intakeStopper.set_value(false);
+  chassis.moveToPose(0, 31.4, 0, 1000);
+  chassis.waitUntilDone();
+  chassis.turnToHeading(90, 350);
+  chassis.waitUntilDone();
+  lW.set_value(true);
+  pros::delay(150);
+  stage1.move(127);
+  stage2.move(-127);
+  chassis.moveToPose(4.8, 32.5, 90, 1500);
+  chassis.waitUntilDone();
+  chassis.moveToPoint(22, 32, 2000);
+  chassis.waitUntilDone();
+  intakeStopper.set_value(true);
+  pros::delay(150);
+  stage1.move(127);
+  stage2.move(-127);
+  stage3.move(-127);
+  pros::delay(1635);
+  /*chassis.moveToPose(0, -34, 0, 1200, {.forwards = false});
   chassis.waitUntilDone();
   stage3.move_relative(-1500, 120);
   pros::delay(160);
@@ -60,7 +79,7 @@ void route1() {
   stage2.move(127);
   pros::delay(750);
   stage1.move(-75);
-  stage2.move(75);
+  stage2.move(75);*/
   pros::delay(2500);
 
   if (!pros::competition::is_connected()) {
@@ -79,16 +98,18 @@ void route2() {
   chassis.waitUntilDone();
   chassis.turnToHeading(-38.7, 250);
   chassis.waitUntilDone();
-  chassis.moveToPose(-14.8, 25.1, -37, 1100,
-                     {.maxSpeed = 100, .earlyExitRange = 4.2});
+  chassis.moveToPose(-15.8, 26.3, -37, 1100,
+                     {.maxSpeed = 110, .earlyExitRange = 4.6});
+  chassis.waitUntilDone();
+  chassis.moveToPose(-15.3, 26.6, -37, 810,
+                     {.maxSpeed = 60}); // 65  chassis.moveToPose(-14.8, 25.1,
+                                        // -37, 700, {.maxSpeed = 70}); //65
   chassis.waitUntilDone();
   lW.set_value(HIGH);
-  chassis.moveToPose(-14.8, 25.1, -37, 700, {.maxSpeed = 65});
-  chassis.waitUntilDone();
   chassis.turnToHeading(-134.62, 600);
   chassis.waitUntilDone();
   chassis.moveToPose(-4.8, 38.4, -135., 1600,
-                     {.forwards = false, .maxSpeed = 55});
+                     {.forwards = false, .maxSpeed = 65}); // 60
   chassis.waitUntilDone();
   pros::delay(155);
   stage1.move(-127);
@@ -99,8 +120,8 @@ void route2() {
   pros::delay(70);
   stage1.move(127);
   stage2.move(-125);
-  stage3.move(118);
-  pros::delay(1360);
+  stage3.move(117);
+  pros::delay(1370);
   stage1.move(0);
   stage2.move(0);
   stage3.move(0);
@@ -110,35 +131,38 @@ void route2() {
   stage1.move(127);
   stage2.move(-127);
   chassis.waitUntilDone();
-  chassis.turnToHeading(-180, 300);
+  chassis.turnToHeading(-180, 270); // 300
   chassis.waitUntilDone();
   hood.set_value(HIGH);
-  chassis.moveToPoint(-43.7, -12.27, 1090);
+  chassis.moveToPoint(-42.7, -12.27, 905);
   chassis.waitUntilDone();
-  chassis.moveToPose(-42.5, 19, -180, 1650, {.forwards = false});
+  chassis.moveToPoint(-42.7, 19.7, 1400,
+                      {.forwards = false, .maxSpeed = 65, .minSpeed = 65});
   chassis.waitUntilDone();
-  pros::delay(250);
   stage1.move(0);
   stage2.move(0);
   stage3.move(0);
   intakeStopper.set_value(true);
-  pros::delay(150);
+  pros::delay(170);
   stage1.move(127);
   stage2.move(-127);
   stage3.move(-127);
-  pros::delay(1550);
+  pros::delay(1765);
   chassis.waitUntilDone();
-  chassis.moveToPose(-42.85, 6, 180, 900, {.maxSpeed = 60});
+  chassis.moveToPoint(-42.7, -12.27, 2500, {.maxSpeed = 86});
+  chassis.waitUntilDone();
+
+  /*chassis.moveToPose(-42.3, 6, 180, 900, {.maxSpeed = 60});
   chassis.waitUntilDone();
   hood.set_value(LOW);
   intakeStopper.set_value(false);
   stage1.move(0);
   stage2.move(0);
   stage3.move(0);
-  chassis.moveToPoint(-42.5, 18.6, 700,
+  chassis.moveToPoint(-42.3, 18.6, 700,
                       {.forwards = false, .maxSpeed = 100, .minSpeed = 90});
   chassis.waitUntilDone();
-  pros::delay(100);
+  pros::delay(100);*/
   hood.set_value(HIGH);
 
   pros::delay(2000);
