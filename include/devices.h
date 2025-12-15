@@ -13,7 +13,7 @@ inline pros::Motor stage1(10);
 inline pros::Motor stage2(9);
 inline pros::Motor stage3(7);
 
-inline pros::adi::DigitalOut hood('C', false);
+inline pros::adi::DigitalOut hood('D', false);
 inline pros::adi::DigitalOut lW('B', false);
 inline pros::adi::DigitalOut intakeStopper('A', false);
 
@@ -29,30 +29,25 @@ inline pros::MotorGroup
 
 // Define the drivetrain
 inline lemlib::Drivetrain drivetrain(&left_motors, &right_motors, 12.7,
-                                     lemlib::Omniwheel::NEW_325, 450, 1.8);
+                                     lemlib::Omniwheel::NEW_325, 450, 2);
 
 // Define the inertial sensor
 inline pros::Imu imu(18); // Inertial sensor on port 4
 
 // Define the vertical encoder
-inline pros::Rotation vertical_encoder(20);    // Optical shaft encoder on port
-inline pros::Rotation horizontal_encoder(-19); // Optical shaft encoder on port
+inline pros::Rotation vertical_encoder(19); // Optical shaft encoder on port
 
 // Define the vertical tracking wheel
 inline lemlib::TrackingWheel
-    vertical_tracking_wheel(&vertical_encoder, lemlib::Omniwheel::NEW_2, -1.75);
-// Define the vertical tracking wheel
-inline lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder,
-                                                       lemlib::Omniwheel::NEW_2,
-                                                       -2.75);
+    vertical_tracking_wheel(&vertical_encoder, lemlib::Omniwheel::NEW_2, -1);
 
 // Setup odometry sensors
 inline lemlib::OdomSensors
-    sensors(&vertical_tracking_wheel,   // Vertical tracking wheel 1
-            nullptr,                    // Vertical tracking wheel 2 (not used)
-            &horizontal_tracking_wheel, // Horizontal tracking wheel 1
-            nullptr, // Horizontal tracking wheel 2 (not used)
-            &imu     // Inertial sensor
+    sensors(&vertical_tracking_wheel, // Vertical tracking wheel 1
+            nullptr,                  // Vertical tracking wheel 2 (not used)
+            nullptr,                  // Horizontal tracking wheel 1
+            nullptr,                  // Horizontal tracking wheel 2 (not used)
+            &imu                      // Inertial sensor
     );
 
 // Define PID controllers
