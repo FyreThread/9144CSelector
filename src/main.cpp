@@ -18,11 +18,8 @@
 void route1() {
   chassis.setPose(0, 0, 0);
   IR.set_value(true);
-<<<<<<< HEAD
   chassis.moveToPoint(0, 24, 5000);
   chassis.waitUntilDone();
-=======
->>>>>>> 0bc8bb69084d1c181ab5856af906ce9cb588cfef
 }
 
 // Left Side
@@ -183,11 +180,8 @@ void initialize() {
   // Initial pneumatic setup
   hood.set_value(false);
   lW.set_value(false);
-<<<<<<< HEAD
   wing.set_value(false);
-=======
   wing.set_value(true);
->>>>>>> 0bc8bb69084d1c181ab5856af906ce9cb588cfef
   IR.set_value(false);
 }
 
