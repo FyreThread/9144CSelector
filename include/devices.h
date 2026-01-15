@@ -40,9 +40,7 @@ inline pros::Rotation vertical_encoder(7); // Optical shaft encoder on port
 
 // Define the vertical tracking wheel
 inline lemlib::TrackingWheel vertical_tracking_wheel(&vertical_encoder,
-
                                                      lemlib::Omniwheel::NEW_275,
-                                                     lemlib::Omniwheel::NEW_325,
                                                      -1.75);
 // Define the vertical tracking wheel
 
@@ -63,15 +61,15 @@ inline lemlib::OdomSensors
 
 // Define PID controllers5
 inline lemlib::ControllerSettings
-    lateral_controller(1, // Proportional gain (kP)
-                       0, // Integral gain (kI)
-                       0, // Derivative gain (kD)
-                       0, // Anti windup
-                       0, // Small error range, in inches
-                       0, // Small error range timeout, in milliseconds
-                       0, // Large error range, in inches
-                       0, // Large error range timeout, in milliseconds
-                       0  // Maximum acceleration (slew)
+    lateral_controller(10, // Proportional gain (kP)
+                       0,  // Integral gain (kI)
+                       0,  // Derivative gain (kD)
+                       0,  // Anti windup
+                       0,  // Small error range, in inches
+                       0,  // Small error range timeout, in milliseconds
+                       0,  // Large error range, in inches
+                       0,  // Large error range timeout, in milliseconds
+                       0   // Maximum acceleration (slew)
     );
 inline lemlib::ControllerSettings
     angular_controller(2.0,  // Proportional gain (kP)

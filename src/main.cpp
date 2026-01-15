@@ -18,7 +18,7 @@
 void route1() {
   chassis.setPose(0, 0, 0);
   IR.set_value(true);
-  chassis.moveToPoint(0, 24, 5000);
+  chassis.moveToPoint(0, 12, 3000);
   chassis.waitUntilDone();
 }
 
