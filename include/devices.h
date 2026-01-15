@@ -61,15 +61,15 @@ inline lemlib::OdomSensors
 
 // Define PID controllers5
 inline lemlib::ControllerSettings
-    lateral_controller(10, // Proportional gain (kP)
-                       0,  // Integral gain (kI)
-                       0,  // Derivative gain (kD)
-                       0,  // Anti windup
-                       0,  // Small error range, in inches
-                       0,  // Small error range timeout, in milliseconds
-                       0,  // Large error range, in inches
-                       0,  // Large error range timeout, in milliseconds
-                       0   // Maximum acceleration (slew)
+    lateral_controller(7, // Proportional gain (kP)
+                       0, // Integral gain (kI)
+                       0, // Derivative gain (kD)
+                       0, // Anti windup
+                       0, // Small error range, in inches
+                       0, // Small error range timeout, in milliseconds
+                       0, // Large error range, in inches
+                       0, // Large error range timeout, in milliseconds
+                       0  // Maximum acceleration (slew)
     );
 inline lemlib::ControllerSettings
     angular_controller(2.0,  // Proportional gain (kP)
