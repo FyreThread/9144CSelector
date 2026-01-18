@@ -1,4 +1,3 @@
-#include "liblvgl/misc/lv_color.h"
 #include "liblvgl/widgets/label/lv_label.h"
 #include <cmath>
 #define LEMLIB_USE_SCREEN false
@@ -16,24 +15,6 @@ int expectedDistBack = 1513;
 
 float leftOffset() { return (expectedDistLeft - dLeft.get_distance()) / 25.4; }
 float backOffset() { return (expectedDistBack - dBack.get_distance()) / 25.4; }
-
-bool redBallDetected = false;
-bool blueBallDetected = false;
-
-bool redMatch = true;
-
-void colourSort() {
-  redBallDetected = false;
-  blueBallDetected = false;
-  int prox = colour.get_proximity();
-  int hue = (int)colour.get_hue();
-  if (prox > 100) {
-    if (hue <= 25 || hue >= 335)
-      redBallDetected = true;
-    else if (hue >= 180 && hue <= 230)
-      blueBallDetected = true;
-  }
-}
 
 void route1() {
   chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
@@ -131,18 +112,7 @@ int currentAutoIndex = 0;
 lv_obj_t *labelTitle;
 lv_obj_t *labelDesc;
 lv_obj_t *labelPose;
-lv_obj_t *labelOptical;
-lv_obj_t *labelColour;
 lv_obj_t *screen;
-
-void updateColourLabel() {
-  if (redBallDetected)
-    lv_label_set_text(labelColour, "Colour: RED");
-  else if (blueBallDetected)
-    lv_label_set_text(labelColour, "Colour: BLUE");
-  else
-    lv_label_set_text(labelColour, "Colour: None");
-}
 
 void updateAutoDisplay() {
   lv_label_set_text_fmt(labelTitle, "Auto %d/%d: %s", currentAutoIndex + 1,
@@ -161,16 +131,6 @@ void uiTask() {
              abs((int)(pose.theta * 10) % 10));
 
     lv_label_set_text(labelPose, buffer);
-
-    colourSort();
-    updateColourLabel();
-
-    if (redMatch == true) {
-      lv_obj_set_style_bg_color(screen, lv_color_make(139, 0, 0), 0);
-    }
-    if (redMatch == false) {
-      lv_obj_set_style_bg_color(screen, lv_color_make(0, 0, 139), 0);
-    }
     pros::delay(50);
   }
 }
@@ -185,8 +145,6 @@ void prevAuto(lv_event_t *e) {
   updateAutoDisplay();
 }
 
-void swapRedMatch(lv_event_t *e) { redMatch = !redMatch; }
-
 void autonSelectorInit() {
   colour.set_led_pwm(100);
   screen = lv_screen_active();
@@ -199,13 +157,6 @@ void autonSelectorInit() {
   lv_label_set_long_mode(labelDesc, LV_LABEL_LONG_WRAP);
   lv_obj_set_width(labelDesc, 200);
   lv_obj_align(labelDesc, LV_ALIGN_CENTER, 0, -10);
-
-  labelColour = lv_label_create(screen);
-  lv_obj_align(labelColour, LV_ALIGN_TOP_RIGHT, 10, 40);
-  lv_label_set_text(labelColour, "Colour: None");
-
-  labelOptical = lv_label_create(screen);
-  lv_obj_align(labelOptical, LV_ALIGN_TOP_LEFT, 10, 120);
 
   lv_obj_t *btnPrev = lv_button_create(screen);
   lv_obj_align(btnPrev, LV_ALIGN_LEFT_MID, 10, 0);
@@ -226,7 +177,6 @@ void autonSelectorInit() {
   lv_obj_t *lblSwap = lv_label_create(btnSwap);
   lv_label_set_text(lblSwap, "Swap Match");
   lv_obj_center(lblSwap);
-  lv_obj_add_event_cb(btnSwap, swapRedMatch, LV_EVENT_CLICKED, NULL);
 
   labelPose = lv_label_create(screen);
   lv_obj_align(labelPose, LV_ALIGN_BOTTOM_MID, 0, -15);
@@ -287,35 +237,15 @@ void opcontrol() {
       stage2.move(-127);
       stage3.move(127);
     } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
-      if ((redMatch && blueBallDetected) || (!redMatch && redBallDetected)) {
-        stage1.move(127);
-        stage2.move(127);
-        stage3.move(127);
-        pros::delay(150);
-        stage1.move(0);
-        stage2.move(0);
-        stage3.move(0);
-      } else {
-        hood.set_value(true);
-        stage1.move(127);
-        stage2.move(127);
-        stage3.move(-127);
-      }
+      hood.set_value(true);
+      stage1.move(127);
+      stage2.move(127);
+      stage3.move(-127);
     } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
-      if ((redMatch && redBallDetected) || (!redMatch && blueBallDetected)) {
-        stage1.move(127);
-        stage2.move(127);
-        stage3.move(-127);
-        pros::delay(150);
-        stage1.move(0);
-        stage2.move(0);
-        stage3.move(0);
-      } else {
-        hood.set_value(false);
-        stage1.move(127);
-        stage2.move(127);
-        stage3.move(127);
-      }
+      hood.set_value(false);
+      stage1.move(127);
+      stage2.move(127);
+      stage3.move(127);
     } else {
       stage1.move(0);
       stage2.move(0);
