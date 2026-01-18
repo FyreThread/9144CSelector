@@ -4,10 +4,14 @@
 #include "pros/adi.hpp"
 #include "pros/distance.hpp"
 #include "pros/misc.hpp"
+#include "pros/optical.hpp"
 
 inline pros::Controller master(pros::E_CONTROLLER_MASTER);
 
-inline pros::Distance dTop(17);
+inline pros::Distance dLeft(17);
+inline pros::Distance dBack(12);
+
+inline pros::Optical colour(16);
 
 inline pros::Motor stage1(11);
 inline pros::Motor stage2(19);
@@ -30,7 +34,7 @@ inline pros::MotorGroup
 
 // Define the drivetrain
 inline lemlib::Drivetrain drivetrain(&left_motors, &right_motors, 9.125,
-                                     lemlib::Omniwheel::NEW_325, 450, 2);
+                                     lemlib::Omniwheel::NEW_325, 450, 1.7);
 // Define the inertial sensor
 inline pros::Imu imu(5); // Inertial sensor on port 4
 
@@ -61,15 +65,15 @@ inline lemlib::OdomSensors
 
 // Define PID controllers5
 inline lemlib::ControllerSettings
-    lateral_controller(7, // Proportional gain (kP)
-                       0, // Integral gain (kI)
-                       0, // Derivative gain (kD)
-                       0, // Anti windup
-                       0, // Small error range, in inches
-                       0, // Small error range timeout, in milliseconds
-                       0, // Large error range, in inches
-                       0, // Large error range timeout, in milliseconds
-                       0  // Maximum acceleration (slew)
+    lateral_controller(5.45, // Proportional gain (kP)
+                       0,    // Integral gain (kI)
+                       0,    // Derivative gain (kD)
+                       0,    // Anti windup
+                       0,    // Small error range, in inches
+                       0,    // Small error range timeout, in milliseconds
+                       0,    // Large error range, in inches
+                       0,    // Large error range timeout, in milliseconds
+                       0     // Maximum acceleration (slew)
     );
 inline lemlib::ControllerSettings
     angular_controller(2.0,  // Proportional gain (kP)
