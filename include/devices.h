@@ -48,7 +48,7 @@ inline lemlib::TrackingWheel vertical_tracking_wheel(&vertical_encoder,
                                                      -1.75);
 // Define the vertical tracking wheel
 
-inline pros::Rotation horizontal_encoder(18);
+inline pros::Rotation horizontal_encoder(-18);
 
 inline lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder,
                                                        lemlib::Omniwheel::NEW_2,

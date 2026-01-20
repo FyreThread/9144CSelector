@@ -2,9 +2,9 @@
 #include <cmath>
 #define LEMLIB_USE_SCREEN false
 #include "./devices.h"
-#include "lemlib/api.hpp"
+#include "lemlib/api.hpp" // IWYU pragma: keep
 #include "main.h"
-#include "pros/adi.h"
+#include "pros/adi.h" // IWYU pragma: keep
 #include "pros/misc.h"
 #include "pros/misc.hpp"
 #include "pros/motors.h"
@@ -26,70 +26,188 @@ void route1() {
   stage3.move(-127);
   chassis.moveToPoint(0, 3, 250);
   chassis.waitUntilDone();
-  chassis.moveToPoint(0, -39, 1500, {.forwards = false});
+}
+
+// Qual Match Left
+void qLeft() {
+  expectedDistBack = 300;
+  expectedDistLeft = 1307;
+  chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
+  chassis.setPose(0, 0 - backOffset(), 0);
+  IR.set_value(true);
+  hood.set_value(false);
+  stage1.move(127);
+  stage2.move(127);
+  stage3.move(-127);
+  chassis.moveToPoint(0, 11, 500);
   chassis.waitUntilDone();
-  chassis.turnToHeading(-90, 650);
+  chassis.moveToPose(-6.8, 33.2, -30.6, 2000);
+  chassis.waitUntil(17.5);
   lW.set_value(true);
   chassis.waitUntilDone();
-  chassis.moveToPoint(-10, -34.5, 1250);
+  chassis.turnToHeading(-135, 600);
   chassis.waitUntilDone();
-  chassis.moveToPose(22, -35.6, -90, 1850, {.forwards = false});
+  chassis.moveToPoint(0.4, 43.9, 1000, {.forwards = false});
   chassis.waitUntilDone();
   hood.set_value(false);
   stage1.move(-127);
   stage2.move(-127);
-  stage3.move(127);
-  pros::delay(200);
+  stage3.move(-127);
+  pros::delay(250);
+  stage1.move(127);
+  stage2.move(127);
+  stage3.move(66);
+  pros::delay(1500);
+  chassis.moveToPoint(-34.2, 8.4, 1750, {.maxSpeed = 70});
+  chassis.waitUntilDone();
+  hood.set_value(false);
+  stage1.move(127);
+  stage2.move(127);
+  stage3.move(-127);
+  chassis.turnToHeading(-178.7, 600);
+  chassis.waitUntilDone();
+  chassis.moveToPoint(-36.4, -3.5, 850);
+  chassis.waitUntilDone();
+  chassis.moveToPoint(-36.2, 26.7, 1000, {.forwards = false});
+  chassis.waitUntilDone();
   hood.set_value(true);
   stage1.move(127);
   stage2.move(127);
   stage3.move(-127);
-  pros::delay(1700);
+  pros::delay(2500);
+}
+
+// Elim Match Left
+void elimLeft() {
+  expectedDistBack = 300;
+  expectedDistLeft = 1307;
+  chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
+  chassis.setPose(0, 0 - backOffset(), 0);
+  IR.set_value(true);
   hood.set_value(false);
   stage1.move(127);
   stage2.move(127);
   stage3.move(-127);
-  chassis.moveToPoint(11.5, -35.6, 500);
+  chassis.moveToPoint(0, 11, 500);
+  chassis.waitUntilDone();
+  chassis.moveToPose(-6.8, 33.2, -30.6, 2000);
+  chassis.waitUntil(17.5);
+  lW.set_value(true);
+  chassis.waitUntilDone();
+  chassis.turnToHeading(-135, 600);
+  chassis.waitUntilDone();
+  chassis.moveToPoint(-34.2, 8.4, 1750, {.maxSpeed = 70});
+  chassis.waitUntilDone();
+  hood.set_value(false);
+  stage1.move(127);
+  stage2.move(127);
+  stage3.move(-127);
+  chassis.turnToHeading(-178.7, 600);
+  chassis.waitUntilDone();
+  chassis.moveToPoint(-36.4, -3.5, 850);
+  chassis.waitUntilDone();
+  chassis.moveToPoint(-36.2, 26.7, 1000, {.forwards = false});
+  chassis.waitUntilDone();
+  hood.set_value(true);
+  stage1.move(127);
+  stage2.move(127);
+  stage3.move(-127);
+  pros::delay(2500);
+}
+
+// Elim Match Right
+void elimRight() {
+  expectedDistBack = 300;
+  expectedDistLeft = 2065;
+  chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
+  chassis.setPose(0, 0 - backOffset(), 0);
+  IR.set_value(true);
+  hood.set_value(false);
+  stage1.move(127);
+  stage2.move(127);
+  stage3.move(-127);
+  chassis.moveToPoint(0, 11, 500);
+  chassis.waitUntilDone();
+  chassis.moveToPose(6.4, 29.5, 42.6, 2000);
+  chassis.waitUntil(17.5);
+  lW.set_value(true);
+  chassis.waitUntilDone();
+  chassis.turnToHeading(130, 600);
+  chassis.waitUntilDone();
+  chassis.moveToPoint(29.5, 8.4, 1600);
+  chassis.waitUntilDone();
+  chassis.turnToHeading(178.5, 600);
+  chassis.waitUntilDone();
+  chassis.moveToPoint(31, -3.5, 875);
+  chassis.waitUntilDone();
+  chassis.moveToPoint(31.2, 3, 500, {.forwards = false});
+  chassis.waitUntilDone();
+  chassis.moveToPose(31.8, 15.7, 177.8, 1500, {.forwards = false});
+  chassis.waitUntilDone();
+  chassis.moveToPoint(31.4, 26.3, 1000, {.forwards = false, .minSpeed = 30});
+  chassis.waitUntilDone();
+  hood.set_value(true);
+  stage1.move(127);
+  stage2.move(127);
+  stage3.move(-127);
+  pros::delay(1900);
+  chassis.moveToPoint(31.8, 8.6, 750);
   chassis.waitUntilDone();
   lW.set_value(false);
-  chassis.turnToHeading(30, 500);
+  chassis.moveToPose(21.4, 26, 177, 2000, {.forwards = false});
   chassis.waitUntilDone();
-  chassis.moveToPose(25.2, -14.0, 34.66, 1500);
-  chassis.waitUntilDone();
-  chassis.turnToHeading(-2, 600);
-  chassis.waitUntilDone();
-  chassis.moveToPose(25, 30.4, -4.8, 2500);
-  chassis.waitUntilDone();
-  chassis.turnToHeading(-52, 600);
-  chassis.waitUntilDone();
-  chassis.moveToPose(35.7, 21.9, -50, 2500, {.forwards = false});
-  chassis.waitUntilDone();
-  hood.set_value(false);
-  stage1.move(-127);
-  stage2.move(-127);
-  stage3.move(127);
-  pros::delay(200);
-  hood.set_value(false);
-  stage1.move(127);
-  stage2.move(127);
-  stage3.move(127);
-  pros::delay(1750);
-  hood.set_value(false);
-  stage1.move(127);
-  stage2.move(127);
-  stage3.move(-127);
-  lW.set_value(true);
-  chassis.moveToPose(5.1, 56.2, -41, 2000);
-  chassis.waitUntilDone();
-  chassis.turnToHeading(-90, 600);
-  chassis.waitUntilDone();
-  chassis.moveToPoint(-9.3, 58.1, 2500);
+  wing.set_value(false);
+  chassis.moveToPoint(22.5, 42.1, 2000, {.forwards = false, .minSpeed = 60});
   chassis.waitUntilDone();
 }
 
-void route2() {
-  chassis.setPose(0, 0, 0);
+void qRight() {
+  expectedDistBack = 1920;
+  chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
+  chassis.setPose(0, 0 - backOffset(), 0);
   IR.set_value(true);
+  hood.set_value(false);
+  stage1.move(127);
+  stage2.move(127);
+  stage3.move(-127);
+  chassis.moveToPoint(0, 12, 500);
+  chassis.waitUntilDone();
+  chassis.moveToPose(-13.4, 22.5, -112, 1500);
+  chassis.waitUntilDone();
+  chassis.moveToPose(-26.1, 16.1, -126, 1000);
+  chassis.waitUntil(8);
+  lW.set_value(true);
+  chassis.waitUntilDone();
+  chassis.moveToPose(-36.6, 8.0, -135, 1500);
+  lW.set_value(false);
+  chassis.waitUntilDone();
+  hood.set_value(false);
+  stage1.move(-100);
+  stage2.move(-127);
+  stage3.move(-127);
+  pros::delay(1250);
+  stage2.move(-127);
+  stage3.move(-127);
+  chassis.moveToPoint(-5.1, 40.6, 1500, {.forwards = false});
+  hood.set_value(false);
+  stage1.move(127);
+  stage2.move(127);
+  stage3.move(-127);
+  chassis.waitUntilDone();
+  lW.set_value(true);
+  chassis.turnToHeading(-269, 600);
+  chassis.waitUntilDone();
+  chassis.moveToPoint(9, 38.2, 1250);
+  chassis.waitUntilDone();
+  chassis.moveToPose(-16, 38.5, -270, 1750, {.forwards = false});
+  chassis.waitUntilDone();
+  chassis.moveToPoint(-23, 38.5, 1250, {.forwards = false});
+  chassis.waitUntilDone();
+  hood.set_value(true);
+  stage1.move(127);
+  stage2.move(127);
+  stage3.move(-127);
+  pros::delay(2000);
 }
 
 void skillsAuto() {}
@@ -101,10 +219,11 @@ struct AutoRoutine {
   void (*routine)();
 };
 
-AutoRoutine autos[] = {{"Left", "Description of scoring here", route1},
-                       {"Right Side", "Right", route2},
-                       {"Skills", "Full field skills run", skillsAuto},
-                       {"Do Nothing", "Literally does nothing", doNothing}};
+AutoRoutine autos[] = {{"Elims Left", "7 Long, Wing", elimLeft},
+                       {"Qualifying Left", "4 Mid, 3 Long", qLeft},
+                       {"Qualifying Right", "4 Low, 3 Long", qRight},
+                       {"Elims Left", "7 Long, Wing", elimLeft},
+                       {"Elims Right", "7 Long, Wing", elimRight}};
 
 const int NUM_AUTOS = sizeof(autos) / sizeof(autos[0]);
 int currentAutoIndex = 0;
@@ -172,12 +291,6 @@ void autonSelectorInit() {
   lv_obj_center(lblNext);
   lv_obj_add_event_cb(btnNext, nextAuto, LV_EVENT_CLICKED, NULL);
 
-  lv_obj_t *btnSwap = lv_button_create(screen);
-  lv_obj_align(btnSwap, LV_ALIGN_TOP_RIGHT, 0, 0);
-  lv_obj_t *lblSwap = lv_label_create(btnSwap);
-  lv_label_set_text(lblSwap, "Swap Match");
-  lv_obj_center(lblSwap);
-
   labelPose = lv_label_create(screen);
   lv_obj_align(labelPose, LV_ALIGN_BOTTOM_MID, 0, -15);
   lv_label_set_text(labelPose, "X:0.0 Y:0.0 T:0.0");
@@ -191,7 +304,7 @@ void controllerDisplayTask() {
   while (true) {
     lemlib::Pose pose = chassis.getPose();
     master.print(2, 0, "X:%.1f Y:%.1f T:%.1f", pose.x, pose.y, pose.theta);
-    pros::delay(50);
+    pros::delay(250);
   }
 }
 
