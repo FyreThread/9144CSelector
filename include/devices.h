@@ -9,6 +9,7 @@
 inline pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 inline pros::Distance dLeft(17);
+inline pros::Distance dRight(6);
 inline pros::Distance dBack(12);
 
 inline pros::Optical colour(16);
@@ -73,10 +74,10 @@ inline lemlib::ControllerSettings
                        0,    // Small error range timeout, in milliseconds
                        0,    // Large error range, in inches
                        0,    // Large error range timeout, in milliseconds
-                       0     // Maximum acceleration (slew)
+                       0   // Maximum acceleration (slew)
     );
 inline lemlib::ControllerSettings
-    angular_controller(2.0,  // Proportional gain (kP)
+    angular_controller(1.9,  // Proportional gain (kP)
                        0.00, // Integral gain (kI)
                        16.6, // Derivative gain (kD)
                        0,    // Anti windup

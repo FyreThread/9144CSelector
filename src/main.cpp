@@ -1,5 +1,7 @@
 #include "liblvgl/widgets/label/lv_label.h"
+#include "pros/device.hpp"
 #include <cmath>
+#include <cstdio>
 #define LEMLIB_USE_SCREEN false
 #include "./devices.h"
 #include "lemlib/api.hpp" // IWYU pragma: keep
@@ -16,15 +18,37 @@ int expectedDistBack = 1513;
 float leftOffset() { return (expectedDistLeft - dLeft.get_distance()) / 25.4; }
 float backOffset() { return (expectedDistBack - dBack.get_distance()) / 25.4; }
 
-void route1() {
+void sawp() {
   chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
-  chassis.setPose(0 - leftOffset(), 0 - backOffset(), 0);
+  chassis.setPose(0, 0, 0);
   IR.set_value(true);
   hood.set_value(false);
   stage1.move(127);
   stage2.move(127);
   stage3.move(-127);
-  chassis.moveToPoint(0, 3, 250);
+  lW.set_value(true);
+  chassis.moveToPoint(.4, 30, 1000, {.maxSpeed = 85});
+  chassis.waitUntilDone();
+  chassis.turnToHeading(100, 700);
+  chassis.waitUntilDone();
+  chassis.moveToPoint(3, 29.2, 750, {.minSpeed = 35});
+  chassis.waitUntilDone();
+  pros::delay(250);
+  chassis.moveToPoint(-23, 34.5, 1500, {.forwards = false, .minSpeed = 40});
+  chassis.waitUntilDone();
+  hood.set_value(true);
+  stage1.move(127);
+  stage2.move(127);
+  stage3.move(-127);
+  pros::delay(1000);
+  lW.set_value(false);
+  chassis.moveToPoint(-4.9, 33.6, 750);
+  chassis.waitUntilDone();
+  hood.set_value(false);
+  stage1.move(127);
+  stage2.move(127);
+  stage3.move(-127);
+  chassis.turnToHeading(232, 600);
   chassis.waitUntilDone();
 }
 
@@ -56,7 +80,7 @@ void qLeft() {
   pros::delay(250);
   stage1.move(127);
   stage2.move(127);
-  stage3.move(66);
+  stage3.move(60);
   pros::delay(1500);
   chassis.moveToPoint(-34.2, 8.4, 1750, {.maxSpeed = 70});
   chassis.waitUntilDone();
@@ -66,9 +90,13 @@ void qLeft() {
   stage3.move(-127);
   chassis.turnToHeading(-178.7, 600);
   chassis.waitUntilDone();
-  chassis.moveToPoint(-36.4, -3.5, 850);
+  chassis.moveToPoint(-36.4, -3.5, 860);
   chassis.waitUntilDone();
-  chassis.moveToPoint(-36.2, 26.7, 1000, {.forwards = false});
+  chassis.moveToPoint(-36.5, 5.8, 500, {.forwards = false});
+  chassis.waitUntilDone();
+  chassis.moveToPose(-37.9, 23, -178.9, 1500, {.forwards = false});
+  chassis.waitUntilDone();
+  chassis.moveToPoint(-37.9, 27, 1000, {.forwards = false, .minSpeed = 35});
   chassis.waitUntilDone();
   hood.set_value(true);
   stage1.move(127);
@@ -96,7 +124,7 @@ void elimLeft() {
   chassis.waitUntilDone();
   chassis.turnToHeading(-135, 600);
   chassis.waitUntilDone();
-  chassis.moveToPoint(-34.2, 8.4, 1750, {.maxSpeed = 70});
+  chassis.moveToPoint(-34.2, 8.4, 1250, {.maxSpeed = 70});
   chassis.waitUntilDone();
   hood.set_value(false);
   stage1.move(127);
@@ -104,15 +132,27 @@ void elimLeft() {
   stage3.move(-127);
   chassis.turnToHeading(-178.7, 600);
   chassis.waitUntilDone();
-  chassis.moveToPoint(-36.4, -3.5, 850);
+  chassis.moveToPoint(-36.4, -3.5, 825);
   chassis.waitUntilDone();
-  chassis.moveToPoint(-36.2, 26.7, 1000, {.forwards = false});
+  chassis.moveToPoint(-36.2, 6.7, 500, {.forwards = false});
+  chassis.waitUntilDone();
+  chassis.moveToPose(-37.3, 19.5, -179.5, 1250, {.forwards = false});
+  chassis.waitUntilDone();
+  chassis.moveToPoint(-37, 26.6, 1250, {.forwards = false, .minSpeed = 40});
   chassis.waitUntilDone();
   hood.set_value(true);
   stage1.move(127);
   stage2.move(127);
   stage3.move(-127);
-  pros::delay(2500);
+  pros::delay(2000);
+  chassis.moveToPoint(-38, 10.2, 500);
+  chassis.waitUntilDone();
+  chassis.moveToPose(-45.5, 27.9, -178.7, 2000, {.forwards = false});
+  chassis.waitUntilDone();
+  wing.set_value(false);
+  lW.set_value(false);
+  chassis.moveToPoint(-43.5, 42, 2500, {.forwards = false, .minSpeed = 50});
+  chassis.waitUntilDone();
 }
 
 // Elim Match Right
@@ -134,17 +174,17 @@ void elimRight() {
   chassis.waitUntilDone();
   chassis.turnToHeading(130, 600);
   chassis.waitUntilDone();
-  chassis.moveToPoint(29.5, 8.4, 1600);
+  chassis.moveToPoint(29.5, 8.4, 1250, {.maxSpeed = 75});
   chassis.waitUntilDone();
   chassis.turnToHeading(178.5, 600);
   chassis.waitUntilDone();
-  chassis.moveToPoint(31, -3.5, 875);
+  chassis.moveToPoint(31, -3.5, 850);
   chassis.waitUntilDone();
   chassis.moveToPoint(31.2, 3, 500, {.forwards = false});
   chassis.waitUntilDone();
-  chassis.moveToPose(31.8, 15.7, 177.8, 1500, {.forwards = false});
+  chassis.moveToPose(29.9, 20.6, 178.2, 1500, {.forwards = false});
   chassis.waitUntilDone();
-  chassis.moveToPoint(31.4, 26.3, 1000, {.forwards = false, .minSpeed = 30});
+  chassis.moveToPoint(29.8, 26, 750, {.forwards = false, .minSpeed = 30});
   chassis.waitUntilDone();
   hood.set_value(true);
   stage1.move(127);
@@ -157,8 +197,51 @@ void elimRight() {
   chassis.moveToPose(21.4, 26, 177, 2000, {.forwards = false});
   chassis.waitUntilDone();
   wing.set_value(false);
-  chassis.moveToPoint(22.5, 42.1, 2000, {.forwards = false, .minSpeed = 60});
+  chassis.moveToPoint(20.5, 43.8, 2500, {.forwards = false, .minSpeed = 40});
   chassis.waitUntilDone();
+}
+
+void qRightSide() {
+  expectedDistBack = 300;
+  expectedDistLeft = 2065;
+  chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
+  chassis.setPose(0, 0 - backOffset(), 0);
+  IR.set_value(true);
+  hood.set_value(false);
+  stage1.move(127);
+  stage2.move(0);
+  stage3.move(-127);
+  chassis.moveToPoint(0, 20.5, 750);
+  chassis.waitUntilDone();
+  chassis.turnToHeading(45, 500);
+  chassis.waitUntilDone();
+  chassis.moveToPoint(7.6, 29.8, 800, {.maxSpeed = 100});
+  chassis.waitUntilDone();
+  chassis.turnToHeading(-43.1, 750);
+  chassis.waitUntilDone();
+  chassis.moveToPose(-1.1, 42.5, -43.8, 2500, {.horizontalDrift = .75});
+  chassis.waitUntilDone();
+  hood.set_value(false);
+  stage1.move(-100);
+  stage2.move(-127);
+  stage3.move(127);
+  pros::delay(1500);
+  chassis.moveToPoint(32.1, 10.6, 2250, {.forwards = false, .maxSpeed = 70});
+  lW.set_value(true);
+  chassis.waitUntilDone();
+  chassis.turnToHeading(-180, 800);
+  chassis.waitUntilDone();
+  chassis.moveToPoint(28.9, -2.4, 1000, {.minSpeed = 20});
+  chassis.waitUntilDone();
+  chassis.moveToPose(30.6, 21.6, -178, 1500, {.forwards = false});
+  chassis.waitUntilDone();
+  chassis.moveToPoint(31.2, 26.1, 1000, {.forwards = false});
+  chassis.waitUntilDone();
+  hood.set_value(true);
+  stage1.move(127);
+  stage2.move(127);
+  stage3.move(-127);
+  pros::delay(2500);
 }
 
 void qRight() {
@@ -188,7 +271,7 @@ void qRight() {
   pros::delay(1250);
   stage2.move(-127);
   stage3.move(-127);
-  chassis.moveToPoint(-5.1, 40.6, 1500, {.forwards = false});
+  chassis.moveToPoint(-5.1, 40.6, 1500, {.forwards = false, .maxSpeed = 75});
   hood.set_value(false);
   stage1.move(127);
   stage2.move(127);
@@ -197,7 +280,7 @@ void qRight() {
   lW.set_value(true);
   chassis.turnToHeading(-269, 600);
   chassis.waitUntilDone();
-  chassis.moveToPoint(9, 38.2, 1250);
+  chassis.moveToPoint(9, 38.2, 1100);
   chassis.waitUntilDone();
   chassis.moveToPose(-16, 38.5, -270, 1750, {.forwards = false});
   chassis.waitUntilDone();
@@ -211,7 +294,6 @@ void qRight() {
 }
 
 void skillsAuto() {}
-void doNothing() {}
 
 struct AutoRoutine {
   const char *name;
@@ -219,9 +301,9 @@ struct AutoRoutine {
   void (*routine)();
 };
 
-AutoRoutine autos[] = {{"Elims Left", "7 Long, Wing", elimLeft},
+AutoRoutine autos[] = {{"SAWP", "5 Right Long, 6 High, 3 Left Long", sawp},
                        {"Qualifying Left", "4 Mid, 3 Long", qLeft},
-                       {"Qualifying Right", "4 Low, 3 Long", qRight},
+                       {"Qualifying Right", "3 Low, 4 Long", qRight},
                        {"Elims Left", "7 Long, Wing", elimLeft},
                        {"Elims Right", "7 Long, Wing", elimRight}};
 
@@ -318,7 +400,6 @@ void initialize() {
   lW.set_value(false);
   wing.set_value(false);
   wing.set_value(true);
-  IR.set_value(false);
 }
 
 void autonomous() { runSelectedAuton(); }
@@ -332,7 +413,11 @@ bool lastAState = false;
 
 void opcontrol() {
   chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
+
   IR.set_value(true);
+  if (!pros::competition::is_connected()) {
+    IR.set_value(true);
+  }
 
   while (true) {
     bool currentAState = master.get_digital(pros::E_CONTROLLER_DIGITAL_A);
@@ -358,7 +443,7 @@ void opcontrol() {
       hood.set_value(false);
       stage1.move(127);
       stage2.move(127);
-      stage3.move(127);
+      stage3.move(80);
     } else {
       stage1.move(0);
       stage2.move(0);
