@@ -1,5 +1,4 @@
 #include "liblvgl/widgets/label/lv_label.h"
-#include "pros/device.hpp"
 #include <cmath>
 #include <cstdio>
 #define LEMLIB_USE_SCREEN false
@@ -18,6 +17,42 @@ int expectedDistBack = 1513;
 float leftOffset() { return (expectedDistLeft - dLeft.get_distance()) / 25.4; }
 float backOffset() { return (expectedDistBack - dBack.get_distance()) / 25.4; }
 
+void localsawp() {
+  chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
+  chassis.setPose(0, 0, 0);
+  IR.set_value(true);
+  chassis.moveToPoint(.5, -31.4, 1250, {.forwards = false, .maxSpeed = 90});
+  chassis.waitUntilDone();
+  IR.set_value(true);
+  hood.set_value(true);
+  stage1.move(127);
+  stage2.move(127);
+  stage3.move(-60);
+  pros::delay(150);
+  chassis.turnToHeading(66.9, 600);
+  chassis.waitUntilDone();
+  hood.set_value(false);
+  stage1.move(127);
+  stage2.move(127);
+  stage3.move(-127);
+  chassis.moveToPoint(13.2, -26.8, 1250);
+  chassis.waitUntil(12);
+  lW.set_value(true);
+  chassis.waitUntilDone();
+  chassis.turnToHeading(-84.2, 750);
+  chassis.waitUntilDone();
+  lW.set_value(false);
+  chassis.moveToPoint(-29.2, -22.9, 1500, {.maxSpeed = 75});
+  chassis.waitUntil(38);
+  lW.set_value(true);
+  chassis.waitUntilDone();
+  chassis.turnToPoint(-24.6, -33.8, 750);
+  chassis.waitUntilDone();
+  lW.set_value(false);
+  chassis.moveToPoint(-23.8, -34.7, 750);
+  chassis.waitUntilDone();
+}
+
 void sawp() {
   chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
   chassis.setPose(0, 0, 0);
@@ -27,29 +62,65 @@ void sawp() {
   stage2.move(127);
   stage3.move(-127);
   lW.set_value(true);
-  chassis.moveToPoint(.4, 30, 1000, {.maxSpeed = 85});
+  chassis.moveToPoint(-.1, 31, 1050);
   chassis.waitUntilDone();
-  chassis.turnToHeading(100, 700);
+  chassis.turnToHeading(98, 750, {.minSpeed = 20, .earlyExitRange = .1});
   chassis.waitUntilDone();
-  chassis.moveToPoint(3, 29.2, 750, {.minSpeed = 35});
+  chassis.moveToPoint(4.2, 29.7, 1000, {.minSpeed = 35});
   chassis.waitUntilDone();
-  pros::delay(250);
-  chassis.moveToPoint(-23, 34.5, 1500, {.forwards = false, .minSpeed = 40});
+  pros::delay(350);
+  chassis.moveToPoint(-22.2, 34.7, 1250, {.forwards = false, .minSpeed = 35});
   chassis.waitUntilDone();
   hood.set_value(true);
   stage1.move(127);
   stage2.move(127);
   stage3.move(-127);
-  pros::delay(1000);
+  pros::delay(750);
   lW.set_value(false);
-  chassis.moveToPoint(-4.9, 33.6, 750);
+  chassis.turnToHeading(195, 750);
   chassis.waitUntilDone();
+  chassis.moveToPoint(-34.2, 9.5, 500);
   hood.set_value(false);
   stage1.move(127);
   stage2.move(127);
   stage3.move(-127);
-  chassis.turnToHeading(232, 600);
   chassis.waitUntilDone();
+  chassis.moveToPoint(-42.8, -30.5, 1500, {.maxSpeed = 75});
+  chassis.waitUntil(39.5);
+  lW.set_value(true);
+  chassis.waitUntilDone();
+  chassis.turnToPoint(-50.6, -22.1, 500, {.forwards = false});
+  chassis.waitUntilDone();
+  chassis.moveToPoint(-50.8, -21.2, 850, {.forwards = false});
+  chassis.waitUntilDone();
+  hood.set_value(false);
+  stage1.move(-127);
+  stage2.move(-127);
+  stage3.move(127);
+  pros::delay(150);
+  hood.set_value(false);
+  stage1.move(127);
+  stage2.move(127);
+  stage3.move(70);
+  pros::delay(875);
+  lW.set_value(true);
+  hood.set_value(false);
+  stage1.move(127);
+  stage2.move(127);
+  stage3.move(-127);
+  chassis.moveToPoint(-22.4, -59.7, 1500, {.maxSpeed = 95});
+  chassis.waitUntilDone();
+  chassis.turnToHeading(94, 750);
+  chassis.waitUntilDone();
+  chassis.moveToPoint(-9.3, -62.9, 1000, {.minSpeed = 35});
+  chassis.waitUntilDone();
+  chassis.moveToPoint(-36, -59.4, 1250, {.forwards = false, .minSpeed = 35});
+  chassis.waitUntilDone();
+  hood.set_value(true);
+  stage1.move(127);
+  stage2.move(127);
+  stage3.move(-127);
+  pros::delay(2500);
 }
 
 // Qual Match Left
@@ -178,7 +249,7 @@ void elimRight() {
   chassis.waitUntilDone();
   chassis.turnToHeading(178.5, 600);
   chassis.waitUntilDone();
-  chassis.moveToPoint(31, -3.5, 850);
+  chassis.moveToPoint(31, -3.5, 850, {.minSpeed = 35});
   chassis.waitUntilDone();
   chassis.moveToPoint(31.2, 3, 500, {.forwards = false});
   chassis.waitUntilDone();
@@ -301,7 +372,7 @@ struct AutoRoutine {
   void (*routine)();
 };
 
-AutoRoutine autos[] = {{"SAWP", "5 Right Long, 6 High, 3 Left Long", sawp},
+AutoRoutine autos[] = {{"SAWP", "4 Right, 6 High, 3 Left", sawp},
                        {"Qualifying Left", "4 Mid, 3 Long", qLeft},
                        {"Qualifying Right", "3 Low, 4 Long", qRight},
                        {"Elims Left", "7 Long, Wing", elimLeft},
@@ -399,7 +470,7 @@ void initialize() {
   hood.set_value(false);
   lW.set_value(false);
   wing.set_value(false);
-  wing.set_value(true);
+  IR.set_value(true);
 }
 
 void autonomous() { runSelectedAuton(); }
@@ -414,32 +485,31 @@ bool lastAState = false;
 void opcontrol() {
   chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
 
-  IR.set_value(true);
-  if (!pros::competition::is_connected()) {
-    IR.set_value(true);
-  }
-
   while (true) {
     bool currentAState = master.get_digital(pros::E_CONTROLLER_DIGITAL_A);
     bool currentBState = master.get_digital(pros::E_CONTROLLER_DIGITAL_B);
     bool currentDownState = master.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT);
 
     if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
+      IR.set_value(true);
       hood.set_value(false);
       stage1.move(127);
       stage2.move(127);
       stage3.move(-127);
     } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
+      IR.set_value(true);
       hood.set_value(false);
       stage1.move(-127);
       stage2.move(-127);
       stage3.move(127);
     } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+      IR.set_value(true);
       hood.set_value(true);
       stage1.move(127);
       stage2.move(127);
       stage3.move(-127);
     } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+      IR.set_value(true);
       hood.set_value(false);
       stage1.move(127);
       stage2.move(127);
@@ -463,6 +533,10 @@ void opcontrol() {
     if (currentDownState && !lastDownState) {
       lWToggled = !lWToggled;
       lW.set_value(lWToggled);
+    }
+
+    if (master.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) {
+      IR.set_value(true);
     }
 
     lastAState = currentAState;
