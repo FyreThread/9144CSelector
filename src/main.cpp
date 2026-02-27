@@ -1,6 +1,10 @@
+#include "lemlib/chassis/chassis.hpp"
 #include "liblvgl/widgets/label/lv_label.h"
 #include <cmath>
 #include <cstdio>
+#include <cstdlib>
+#include <stdlib.h>
+
 #define LEMLIB_USE_SCREEN false
 #include "./devices.h"
 #include "lemlib/api.hpp" // IWYU pragma: keep
@@ -78,35 +82,6 @@ void skills() {
   chassis.turnToHeading(324, 750);
   lW.set_value(false);
   chassis.waitUntilDone();
-  chassis.moveToPose(-17.8, 47.6, -41.56, 2000,
-                     {.horizontalDrift = 1.75, .minSpeed = 35});
-  chassis.waitUntilDone();
-  chassis.turnToHeading(-79.45, 760);
-  chassis.waitUntilDone();
-  intakeStop();
-  chassis.moveToPoint(-92.2, 61.2, 4300, {.maxSpeed = 120, .minSpeed = 15});
-  chassis.waitUntilDone();
-  pros::delay(450);
-  chassis.turnToHeading(8.68, 650);
-  chassis.waitUntilDone();
-  chassis.moveToPoint(-93.9, 63.13, 1050, {.maxSpeed = 35, .minSpeed = 30});
-  chassis.waitUntilDone();
-  pros::delay(460);
-  zeroTheta();
-
-  // Insert distance sensor x reset,
-
-  chassis.moveToPoint(-94.0, 53.6, 1150, {.forwards = false, .minSpeed = 35});
-  chassis.waitUntilDone();
-  chassis.turnToHeading(-90.56, 750);
-  chassis.waitUntilDone();
-  chassis.moveToPoint(-77.5, 48.8, 1450, {.forwards = false, .minSpeed = 55});
-  chassis.waitUntilDone();
-  chassis.moveToPoint(-77.5, 48.8, 450, {.forwards = false, .minSpeed = 25});
-  chassis.waitUntilDone();
-  // Insert distance sensor y reset
-
-  pros::delay(7500);
 }
 
 void sawp() {
@@ -523,8 +498,14 @@ void runSelectedAuton() { autos[currentAutoIndex].routine(); }
 
 void controllerDisplayTask() {
   while (true) {
-    lemlib::Pose pose = chassis.getPose();
-    master.print(2, 0, "X:%.1f Y:%.1f T:%.1f", pose.x, pose.y, pose.theta);
+    lemlib::Pose posed = chassis.getPose();
+
+    char buffer[32];
+    snprintf(buffer, sizeof(buffer), "X:%.1f Y:%.1f T:%.1f     ", posed.x,
+             posed.y, posed.theta);
+
+    master.print(2, 0, buffer);
+
     pros::delay(250);
   }
 }

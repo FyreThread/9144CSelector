@@ -11,7 +11,7 @@ inline pros::Controller master(pros::E_CONTROLLER_MASTER);
 inline pros::Distance dLeft(17);
 inline pros::Distance dRight(6);
 inline pros::Distance dBack(12);
-inline pros::Distance dFront(13);
+inline pros::Distance dFront(16);
 // inline pros::Optical colour(16);
 
 inline pros::Motor stage1(11);
