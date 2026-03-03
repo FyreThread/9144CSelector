@@ -38,6 +38,17 @@ void secondreset() {
   chassis.setPose(correctedX, correctedY, pose.theta);
 }
 
+int expecedDistRightSecondgoal = 480;
+
+void thirdReset() {
+  lemlib::Pose pose = chassis.getPose();
+
+  float correctedX =
+      (expecedDistRightSecondgoal - dRight.get_distance()) / 25.4;
+
+  chassis.setPose(correctedX, 0, pose.theta);
+}
+
 int expectedDistLeft = 460;
 int expectedDistBack = 1513;
 
@@ -202,7 +213,7 @@ void skills() {
   intakeIn();
   chassis.moveToPoint(-94.3, 29.8, 750, {.minSpeed = 15});
   chassis.waitUntilDone();
-  chassis.moveToPoint(-94.2, 38, 2000, {.maxSpeed = 35});
+  chassis.moveToPoint(-94.2, 38, 2000, {.maxSpeed = 40});
   chassis.waitUntilDone();
   chassis.moveToPoint(-93, 22.7, 500, {.forwards = false});
   chassis.waitUntilDone();
@@ -218,8 +229,30 @@ void skills() {
   chassis.waitUntilDone();
   chassis.turnToHeading(70, 550);
   chassis.waitUntilDone();
-  chassis.moveToPoint(-96.5, -67.3, 750, {.forwards = false});
+  chassis.moveToPoint(-98.5, -66.3, 750, {.forwards = false});
   chassis.waitUntilDone();
+  chassis.turnToHeading(178, 650);
+  chassis.waitUntilDone();
+  chassis.moveToPoint(-98.8, -55.1, 650, {.forwards = false, .minSpeed = 35});
+  chassis.waitUntilDone();
+  score();
+  intakeStop();
+  score();
+  thirdReset();
+  pros::delay(1500);
+  lW.set_value(true);
+  chassis.moveToPoint(0.8, -27.4, 1000);
+  chassis.waitUntil(6);
+  intakeIn();
+  chassis.waitUntilDone();
+  chassis.moveToPoint(0.9, -30, 1500, {.maxSpeed = 35});
+  chassis.waitUntilDone();
+  chassis.moveToPose(-.2, -3.3, 182, 1500, {.forwards = false, .lead = .25});
+  chassis.waitUntilDone();
+  chassis.moveToPoint(0.4, 4, 1000, {.forwards = false, .maxSpeed = 35});
+  chassis.waitUntilDone();
+  score();
+  pros::delay(1500);
 }
 
 void sawp() {
