@@ -1,3 +1,4 @@
+#include "lemlib/chassis/chassis.hpp"
 #include "liblvgl/widgets/label/lv_label.h"
 #include <cmath>
 #include <cstdio>
@@ -35,7 +36,7 @@ void secondreset() {
   float correctedX = (expecedDistRightfirstgoal - dRight.get_distance()) / 25.4;
   float correctedY = (expecedDistFrontfirstgoal - dFront.get_distance()) / 25.4;
 
-  chassis.setPose(correctedX, correctedY, pose.theta);
+  chassis.setPose(correctedX, correctedY, 0);
 }
 
 int expecedDistRightSecondgoal = 480;
@@ -122,7 +123,7 @@ void intakeStop() {
 void skills() {
   chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
   chassis.setPose(0, 0, 0);
-  /*IR.set_value(true);
+  IR.set_value(true);
   intakeIn();
   lW.set_value(true);
   hood.set_value(false);
@@ -141,7 +142,7 @@ void skills() {
   chassis.turnToHeading(324, 950);
   lW.set_value(false);
   chassis.waitUntilDone();
-  chassis.moveToPoint(-16.8, 46.4, 2000, {.maxSpeed = 50,  .minSpeed = 5});
+  chassis.moveToPoint(-16.8, 46.4, 2000, {.maxSpeed = 50, .minSpeed = 5});
   chassis.waitUntilDone();
   pros::delay(150);
   chassis.turnToHeading(-79.9, 850);
@@ -153,7 +154,7 @@ void skills() {
   pros::delay(200);
   chassis.turnToHeading(9.5, 650);
   chassis.waitUntilDone();
-    pros::delay(500);
+  pros::delay(500);
   chassis.moveToPoint(-92.9, 63.5, 1050, {.maxSpeed = 32, .minSpeed = 27});
   chassis.waitUntilDone();
   pros::delay(475);
@@ -163,41 +164,49 @@ void skills() {
   chassis.turnToHeading(-75.2, 750);
   chassis.waitUntilDone();
   pros::delay(200);
-  chassis.moveToPoint(-79.0, 46.4, 200, {.forwards = false,.maxSpeed = 20,
-  .minSpeed = 5}); chassis.waitUntilDone(); chassis.moveToPoint(-79.0, 46.4,
-  500, {.forwards = false, .minSpeed = 45}); chassis.waitUntilDone();
-  chassis.moveToPose(-79.0, 46.4, -82.5, 1800, {.forwards = false, .minSpeed =
-  55}); chassis.waitUntilDone();*/  //Done with first portion ie rush and align in long
+  chassis.moveToPoint(-79.0, 46.4, 200,
+                      {.forwards = false, .maxSpeed = 20, .minSpeed = 5});
+  chassis.waitUntilDone();
+  chassis.moveToPoint(-79.0, 46.4, 500, {.forwards = false, .minSpeed = 45});
+  chassis.waitUntilDone();
+  chassis.moveToPose(-79.0, 46.4, -82.5, 1800,
+                     {.forwards = false, .minSpeed = 55});
+  chassis.waitUntilDone();
+  // Done with first portion ie rush and align in long
   // pros::delay(300);
   // firstreset();
   // pros::delay(100);
   // score();
   // pros::delay(1500);//score time
   // hood.set_value(false);
-  /*lW.set_value(true);
+  lW.set_value(true);
   intakeIn();
-  chassis.moveToPoint(18.5, 40.7, 200, { .minSpeed = 55});
+  chassis.moveToPoint(18.5, 40.7, 200, {.minSpeed = 55});
   chassis.waitUntilDone();
   chassis.turnToHeading(0.7, 250);
   chassis.waitUntilDone();
-  chassis.moveToPoint(18.7, 61.8, 2500,{ .minSpeed = 35});
+  chassis.moveToPoint(18.7, 61.8, 2500, {.minSpeed = 35});
   chassis.waitUntilDone();
-  pros::delay(1500); //matchload time
-  chassis.moveToPoint(20.5,58.5, 200, {.forwards = false, .minSpeed = 55});
+  pros::delay(1500); // matchload time
+  chassis.moveToPoint(20.5, 58.5, 200, {.forwards = false, .minSpeed = 55});
   chassis.waitUntilDone();
   chassis.turnToHeading(-0.3, 250);
   chassis.waitUntilDone();
-  chassis.moveToPoint(19.1, 34.4, 1300, {.forwards = false,.minSpeed = 85});
+  chassis.moveToPoint(19.1, 34.4, 1300, {.forwards = false, .minSpeed = 85});
   chassis.waitUntilDone();
   pros::delay(300);
-  chassis.moveToPoint(19.1, 34.4, 850, {.forwards = false,.minSpeed = 15});
+  chassis.moveToPoint(19.1, 34.4, 850, {.forwards = false, .minSpeed = 15});
   chassis.waitUntilDone();
-  //score();
-  //pros::delay(1500);//score time
-  //hood.set_value(false);
-  chassis.moveToPoint(19.1, 34.4, 100, {.forwards = false, .maxSpeed = 20,
-  .minSpeed = 10}); //second matchloading score chassis.waitUntilDone();
-  lW.set_value(false);*/
+  // score();
+  // pros::delay(1500);//score time
+  // hood.set_value(false);
+  chassis.moveToPoint(
+      19.1, 34.4, 100,
+      {.forwards = false,
+       .maxSpeed = 20,
+       .minSpeed = 10}); // second matchloading score chassis.waitUntilDone();
+  lW.set_value(false);
+
   pros::delay(100);
   secondreset();
   intakeIn();
@@ -205,7 +214,7 @@ void skills() {
   chassis.waitUntilDone();
   chassis.turnToHeading(-90, 500);
   chassis.waitUntilDone();
-  chassis.moveToPoint(-94.4, 15.8, 2250, {.maxSpeed = 95});
+  chassis.moveToPoint(-94.4, 15.8, 2250, {.maxSpeed = 90});
   chassis.waitUntilDone();
   chassis.turnToHeading(4, 550);
   chassis.waitUntilDone();
@@ -225,15 +234,15 @@ void skills() {
   chassis.waitUntilDone();
   chassis.turnToHeading(0, 500);
   chassis.waitUntilDone();
-  chassis.moveToPoint(-83, -62.2, 2000, {.forwards = false, .maxSpeed = 100});
+  chassis.moveToPoint(-83, -62.2, 2000, {.forwards = false, .maxSpeed = 90});
   chassis.waitUntilDone();
   chassis.turnToHeading(70, 550);
   chassis.waitUntilDone();
-  chassis.moveToPoint(-98.5, -66.3, 750, {.forwards = false});
+  chassis.moveToPoint(-99.8, -66.8, 750, {.forwards = false});
   chassis.waitUntilDone();
   chassis.turnToHeading(178, 650);
   chassis.waitUntilDone();
-  chassis.moveToPoint(-98.8, -55.1, 650, {.forwards = false, .minSpeed = 35});
+  chassis.moveToPoint(-100.2, -55.9, 650, {.forwards = false, .minSpeed = 35});
   chassis.waitUntilDone();
   score();
   intakeStop();
@@ -241,18 +250,37 @@ void skills() {
   thirdReset();
   pros::delay(1500);
   lW.set_value(true);
-  chassis.moveToPoint(0.8, -27.4, 1000);
-  chassis.waitUntil(6);
+  chassis.moveToPoint(.7, -26.6, 500, {.minSpeed = 35});
+  chassis.waitUntil(5);
   intakeIn();
   chassis.waitUntilDone();
-  chassis.moveToPoint(0.9, -30, 1500, {.maxSpeed = 35});
+  chassis.moveToPoint(.8, -29, 1750, {.maxSpeed = 45});
   chassis.waitUntilDone();
-  chassis.moveToPose(-.2, -3.3, 182, 1500, {.forwards = false, .lead = .25});
-  chassis.waitUntilDone();
-  chassis.moveToPoint(0.4, 4, 1000, {.forwards = false, .maxSpeed = 35});
+  chassis.moveToPoint(-.4, 0, 1250, {.forwards = false, .minSpeed = 35});
   chassis.waitUntilDone();
   score();
   pros::delay(1500);
+  lW.set_value(false);
+  chassis.moveToPoint(0, -6, 500);
+  chassis.waitUntilDone();
+  intakeIn();
+  chassis.moveToPoint(0, 0, 500, {.forwards = false, .minSpeed = 35});
+  chassis.waitUntilDone();
+  chassis.moveToPoint(0, -13, 750);
+  chassis.waitUntilDone();
+  chassis.turnToHeading(317.5, 650);
+  chassis.waitUntilDone();
+  chassis.moveToPoint(17.9, -28.6, 750, {.forwards = false});
+  chassis.waitUntilDone();
+  chassis.turnToHeading(280, 650);
+  chassis.waitUntilDone();
+  chassis.moveToPoint(32.9, -32, 500, {.forwards = false});
+  chassis.waitUntilDone();
+  chassis.turnToHeading(270, 250);
+  chassis.waitUntilDone();
+  while (dBack.get_distance() > 1750) {
+    chassis.moveToPoint(52.5, -32, 150, {.forwards = false, .minSpeed = 90});
+  }
 }
 
 void sawp() {
