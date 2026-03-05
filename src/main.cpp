@@ -134,7 +134,7 @@ void skills() {
   chassis.waitUntilDone();
   chassis.moveToPoint(3.65, 29.2, 650, {.minSpeed = 30});
   chassis.waitUntilDone();
-  pros::delay(1550);
+  pros::delay(1750);
   chassis.waitUntilDone();
   chassis.moveToPoint(-1.1, 29.9, 700, {.forwards = false, .minSpeed = 40});
   chassis.waitUntilDone();
@@ -149,67 +149,41 @@ void skills() {
   chassis.waitUntilDone();
   pros::delay(100);
   intakeStop();
-  chassis.moveToPoint(-93.3, 61.2, 3000, {.maxSpeed = 95, .minSpeed = 0});
+  chassis.moveToPoint(-93.3, 61.2, 2500, {.maxSpeed = 85, .minSpeed = 0});
   chassis.waitUntilDone();
   pros::delay(200);
-  chassis.turnToHeading(9.5, 650);
+  chassis.turnToHeading(8.2, 650);
   chassis.waitUntilDone();
-  pros::delay(500);
-  chassis.moveToPoint(-92.9, 63.5, 1050, {.maxSpeed = 32, .minSpeed = 27});
+  chassis.moveToPoint(-96.5, 47.8, 750, {.forwards = false});
   chassis.waitUntilDone();
-  pros::delay(475);
-  chassis.moveToPoint(-95.8, 49.0, 1300, {.forwards = false});
+  chassis.turnToHeading(-80, 650);
   chassis.waitUntilDone();
-  pros::delay(200);
-  chassis.turnToHeading(-75.2, 750);
+  chassis.moveToPoint(-80.8, 47.5, 750, {.forwards = false, .minSpeed = 35});
   chassis.waitUntilDone();
-  pros::delay(200);
-  chassis.moveToPoint(-79.0, 46.4, 200,
-                      {.forwards = false, .maxSpeed = 20, .minSpeed = 5});
+  pros::delay(150);
+  chassis.setPose(0, 0, 0);
+  chassis.moveToPoint(0, -4, 500, {.maxSpeed = 75});
   chassis.waitUntilDone();
-  chassis.moveToPoint(-79.0, 46.4, 500, {.forwards = false, .minSpeed = 45});
-  chassis.waitUntilDone();
-  chassis.moveToPose(-79.0, 46.4, -82.5, 1800,
-                     {.forwards = false, .minSpeed = 55});
-  chassis.waitUntilDone();
-  // Done with first portion ie rush and align in long
-  // pros::delay(300);
-  // firstreset();
-  // pros::delay(100);
-  // score();
-  // pros::delay(1500);//score time
-  // hood.set_value(false);
+  firstreset();
+  pros::delay(100);
+  score();
+  pros::delay(1500); // score time
   lW.set_value(true);
+  chassis.moveToPose(17.9, 56.8, -2, 1500, {.lead = .25});
+  chassis.waitUntil(5);
   intakeIn();
-  chassis.moveToPoint(18.5, 40.7, 200, {.minSpeed = 55});
   chassis.waitUntilDone();
-  chassis.turnToHeading(0.7, 250);
+  chassis.moveToPoint(17.6, 60.9, 500, {.minSpeed = 35});
   chassis.waitUntilDone();
-  chassis.moveToPoint(18.7, 61.8, 2500, {.minSpeed = 35});
+  pros::delay(1750);
+  chassis.moveToPoint(18.9, 34.4, 750, {.forwards = false, .minSpeed = 35});
   chassis.waitUntilDone();
-  pros::delay(1500); // matchload time
-  chassis.moveToPoint(20.5, 58.5, 200, {.forwards = false, .minSpeed = 55});
+  score();
+  chassis.moveToPoint(18.9, 25, 1500, {.forwards = false, .maxSpeed = 40});
   chassis.waitUntilDone();
-  chassis.turnToHeading(-0.3, 250);
-  chassis.waitUntilDone();
-  chassis.moveToPoint(19.1, 34.4, 1300, {.forwards = false, .minSpeed = 85});
-  chassis.waitUntilDone();
-  pros::delay(300);
-  chassis.moveToPoint(19.1, 34.4, 850, {.forwards = false, .minSpeed = 15});
-  chassis.waitUntilDone();
-  // score();
-  // pros::delay(1500);//score time
-  // hood.set_value(false);
-  chassis.moveToPoint(
-      19.1, 34.4, 100,
-      {.forwards = false,
-       .maxSpeed = 20,
-       .minSpeed = 10}); // second matchloading score chassis.waitUntilDone();
   lW.set_value(false);
-
   pros::delay(100);
   secondreset();
-  intakeIn();
   chassis.moveToPoint(0, 5, 500);
   chassis.waitUntilDone();
   chassis.turnToHeading(-90, 500);
