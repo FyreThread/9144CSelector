@@ -52,8 +52,12 @@ void thirdReset() {
 
 int expectedDistLeft = 460;
 int expectedDistBack = 1513;
+int expectedDistRight;
 
 float leftOffset() { return (expectedDistLeft - dLeft.get_distance()) / 25.4; }
+float rightOffset() {
+  return (expectedDistRight - dRight.get_distance()) / 25.4;
+}
 float backOffset() { return (expectedDistBack - dBack.get_distance()) / 25.4; }
 
 void intakeIn() {
@@ -122,67 +126,57 @@ void intakeStop() {
 
 void skills() {
   chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
-  chassis.setPose(0, 0, 0);
+  expectedDistBack = 1687;
+  expectedDistRight = 456;
+  chassis.setPose(0 + rightOffset(), 0 - backOffset(), 0);
+
   IR.set_value(true);
   intakeIn();
   lW.set_value(true);
   hood.set_value(false);
   wing.set_value(true);
-  chassis.moveToPoint(-.1, 31, 1200, {.maxSpeed = 90});
+  chassis.moveToPoint(0, 46.25, 1400, {.maxSpeed = 90});
   chassis.waitUntilDone();
-  chassis.turnToHeading(97.8, 800, {.minSpeed = 16});
+  chassis.turnToHeading(87, 650);
   chassis.waitUntilDone();
-  chassis.moveToPoint(3.65, 29.2, 650, {.minSpeed = 30});
+  chassis.moveToPoint(6, 47.2, 650, {.minSpeed = 35});
   chassis.waitUntilDone();
-  pros::delay(1750);
+  chassis.moveToPoint(10, 47.2, 1650, {.maxSpeed = 40});
   chassis.waitUntilDone();
-  chassis.moveToPoint(-1.1, 29.9, 700, {.forwards = false, .minSpeed = 40});
+  chassis.moveToPoint(1, 47.2, 500, {.forwards = false});
   chassis.waitUntilDone();
-  pros::delay(100);
-  chassis.turnToHeading(324, 950);
+  chassis.turnToHeading(50, 600);
+  chassis.waitUntilDone();
   lW.set_value(false);
+  chassis.moveToPoint(-12.8, 36.8, 750, {.forwards = false});
   chassis.waitUntilDone();
-  chassis.moveToPoint(-16.8, 46.4, 2000, {.maxSpeed = 50, .minSpeed = 5});
+  chassis.turnToHeading(90, 600);
   chassis.waitUntilDone();
-  pros::delay(150);
-  chassis.turnToHeading(-79.9, 850);
+  chassis.moveToPoint(-100, 29.5, 2250, {.forwards = false, .maxSpeed = 90});
   chassis.waitUntilDone();
-  pros::delay(100);
-  intakeStop();
-  chassis.moveToPoint(-93.3, 61.2, 2500, {.maxSpeed = 85, .minSpeed = 0});
+  chassis.turnToHeading(210, 700);
   chassis.waitUntilDone();
-  pros::delay(200);
-  chassis.turnToHeading(8.2, 650);
+  chassis.moveToPoint(-93.8, 47.4, 725, {.forwards = false});
   chassis.waitUntilDone();
-  chassis.moveToPoint(-96.5, 47.8, 750, {.forwards = false});
+  chassis.turnToHeading(265, 600);
   chassis.waitUntilDone();
-  chassis.turnToHeading(-80, 650);
+  chassis.moveToPoint(-81.4, 48.4, 600, {.forwards = false, .minSpeed = 35});
   chassis.waitUntilDone();
-  chassis.moveToPoint(-80.8, 47.5, 750, {.forwards = false, .minSpeed = 35});
-  chassis.waitUntilDone();
-  pros::delay(150);
-  chassis.setPose(0, 0, 0);
-  chassis.moveToPoint(0, -4, 500, {.maxSpeed = 75});
-  chassis.waitUntilDone();
-  firstreset();
-  pros::delay(100);
   score();
-  pros::delay(1500); // score time
+  chassis.moveToPoint(-70, 48.5, 1650, {.forwards = false, .minSpeed = 110});
+  chassis.waitUntilDone();
   lW.set_value(true);
-  chassis.moveToPose(17.9, 56.8, -2, 1500, {.lead = .25});
-  chassis.waitUntil(5);
+  chassis.moveToPoint(-106.5, 45.8, 900, {.minSpeed = 35});
+  chassis.waitUntil(6);
   intakeIn();
   chassis.waitUntilDone();
-  chassis.moveToPoint(17.6, 60.9, 500, {.minSpeed = 35});
+  chassis.moveToPoint(-110, 45.8, 1850, {.maxSpeed = 35});
   chassis.waitUntilDone();
-  pros::delay(1750);
-  chassis.moveToPoint(18.9, 34.4, 750, {.forwards = false, .minSpeed = 35});
+  chassis.moveToPoint(-81.3, 48.6, 700, {.forwards = false, .minSpeed = 30});
   chassis.waitUntilDone();
   score();
-  chassis.moveToPoint(18.9, 25, 1500, {.forwards = false, .maxSpeed = 40});
+  chassis.moveToPoint(-70, 48.6, 2000, {.forwards = false, .minSpeed = 127});
   chassis.waitUntilDone();
-  lW.set_value(false);
-  pros::delay(100);
   secondreset();
   chassis.moveToPoint(0, 5, 500);
   chassis.waitUntilDone();
@@ -196,7 +190,7 @@ void skills() {
   intakeIn();
   chassis.moveToPoint(-94.3, 29.8, 750, {.minSpeed = 15});
   chassis.waitUntilDone();
-  chassis.moveToPoint(-94.2, 38, 2000, {.maxSpeed = 40});
+  chassis.moveToPoint(-94.2, 38, 2500, {.maxSpeed = 35});
   chassis.waitUntilDone();
   chassis.moveToPoint(-93, 22.7, 500, {.forwards = false});
   chassis.waitUntilDone();
@@ -204,7 +198,7 @@ void skills() {
   wing.set_value(true);
   chassis.turnToHeading(-24, 600);
   chassis.waitUntilDone();
-  chassis.moveToPoint(-82.5, 3.8, 500, {.forwards = false});
+  chassis.moveToPoint(-82.5, 3.8, 750, {.forwards = false});
   chassis.waitUntilDone();
   chassis.turnToHeading(0, 500);
   chassis.waitUntilDone();
@@ -212,29 +206,34 @@ void skills() {
   chassis.waitUntilDone();
   chassis.turnToHeading(70, 550);
   chassis.waitUntilDone();
-  chassis.moveToPoint(-99.8, -66.8, 750, {.forwards = false});
+  chassis.moveToPoint(-98.1, -69, 750, {.forwards = false});
   chassis.waitUntilDone();
-  chassis.turnToHeading(178, 650);
+  chassis.turnToHeading(181, 650);
   chassis.waitUntilDone();
-  chassis.moveToPoint(-100.2, -55.9, 650, {.forwards = false, .minSpeed = 35});
+  chassis.moveToPoint(-98.5, -55.6, 650, {.forwards = false, .minSpeed = 35});
   chassis.waitUntilDone();
   score();
   intakeStop();
   score();
+  chassis.moveToPoint(-98.5, -35, 2000, {.forwards = false, .minSpeed = 100});
+  chassis.waitUntilDone();
   thirdReset();
-  pros::delay(1500);
   lW.set_value(true);
-  chassis.moveToPoint(.7, -26.6, 500, {.minSpeed = 35});
+  chassis.moveToPoint(1, -27, 500, {.minSpeed = 35});
   chassis.waitUntil(5);
   intakeIn();
   chassis.waitUntilDone();
-  chassis.moveToPoint(.8, -29, 1750, {.maxSpeed = 45});
+  chassis.moveToPoint(1, -30, 1750, {.maxSpeed = 45});
   chassis.waitUntilDone();
-  chassis.moveToPoint(-.4, 0, 1250, {.forwards = false, .minSpeed = 35});
+  chassis.moveToPoint(-.2, 0, 1250, {.forwards = false, .minSpeed = 35});
   chassis.waitUntilDone();
   score();
   pros::delay(1500);
   lW.set_value(false);
+
+  // No randoms route
+
+  /*
   chassis.moveToPoint(0, -6, 500);
   chassis.waitUntilDone();
   intakeIn();
@@ -252,9 +251,12 @@ void skills() {
   chassis.waitUntilDone();
   chassis.turnToHeading(270, 250);
   chassis.waitUntilDone();
-  while (dBack.get_distance() > 1750) {
-    chassis.moveToPoint(52.5, -32, 150, {.forwards = false, .minSpeed = 90});
-  }
+  while (dBack.get_distance() > 1800) {
+    chassis.moveToPoint(52.5, -32, 150, {.forwards = false, .minSpeed = 87});
+  }*/
+
+  // randoms route
+  
 }
 
 void sawp() {
