@@ -403,35 +403,35 @@ void elimLeft() {
   chassis.waitUntilDone();
   chassis.turnToHeading(-135, 600);
   chassis.waitUntilDone();
-  chassis.moveToPoint(-34.2, 8.4, 1250, {.maxSpeed = 70});
+  chassis.moveToPoint(-35, 6.6, 1250, {.maxSpeed = 70});
   chassis.waitUntilDone();
   hood.set_value(false);
   stage1.move(127);
   stage2.move(127);
   stage3.move(-127);
-  chassis.turnToHeading(-178.7, 600);
-  chassis.waitUntilDone();
-  chassis.moveToPoint(-36.4, -3.5, 825);
-  chassis.waitUntilDone();
-  chassis.moveToPoint(-36.2, 6.7, 500, {.forwards = false});
-  chassis.waitUntilDone();
-  chassis.moveToPose(-37.3, 19.5, -179.5, 1250, {.forwards = false});
-  chassis.waitUntilDone();
-  chassis.moveToPoint(-37, 26.6, 1250, {.forwards = false, .minSpeed = 40});
-  chassis.waitUntilDone();
-  hood.set_value(true);
-  stage1.move(127);
-  stage2.move(127);
-  stage3.move(-127);
-  pros::delay(2000);
-  chassis.moveToPoint(-38, 10.2, 500);
-  chassis.waitUntilDone();
-  chassis.moveToPose(-45.5, 27.9, -178.7, 2000, {.forwards = false});
-  chassis.waitUntilDone();
-  wing.set_value(false);
-  lW.set_value(false);
-  chassis.moveToPoint(-43.5, 42, 2500, {.forwards = false, .minSpeed = 50});
-  chassis.waitUntilDone();
+  chassis.turnToHeading(-180, 600);
+  chassis.waitUntilDone(); /*
+   chassis.moveToPoint(-36.4, -3.5, 825);
+   chassis.waitUntilDone();
+   chassis.moveToPoint(-36.2, 6.7, 500, {.forwards = false});
+   chassis.waitUntilDone();
+   chassis.moveToPose(-37.3, 19.5, -179.5, 1250, {.forwards = false});
+   chassis.waitUntilDone();
+   chassis.moveToPoint(-37, 26.6, 1250, {.forwards = false, .minSpeed = 40});
+   chassis.waitUntilDone();
+   hood.set_value(true);
+   stage1.move(127);
+   stage2.move(127);
+   stage3.move(-127);
+   pros::delay(2000);
+   chassis.moveToPoint(-38, 10.2, 500);
+   chassis.waitUntilDone();
+   chassis.moveToPose(-45.5, 27.9, -178.7, 2000, {.forwards = false});
+   chassis.waitUntilDone();
+   wing.set_value(false);
+   lW.set_value(false);
+   chassis.moveToPoint(-43.5, 42, 2500, {.forwards = false, .minSpeed = 50});
+   chassis.waitUntilDone();*/
 }
 
 // Elim Match Right
@@ -573,7 +573,11 @@ void qRight() {
   pros::delay(2000);
 }
 
-void skillsAuto() {}
+void tuning() {
+  chassis.setPose(0, 0, 0);
+  chassis.moveToPoint(0, 12, 2000);
+  chassis.waitUntilDone();
+}
 
 struct AutoRoutine {
   const char *name;
@@ -582,7 +586,7 @@ struct AutoRoutine {
 };
 
 AutoRoutine autos[] = {
-    {"skills", "skills", skills},
+    {"tuning", "tuning", tuning},
     {"SAWP", "4 Right, 6 High, 3 Left", sawp},
     {"Qualifying Left", "4 Mid, 3 Long", qLeft},
     {"Qualifying Right", "3 Low, 4 Long", qRight},
