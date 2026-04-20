@@ -10,7 +10,7 @@ inline pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 inline pros::Distance dLeft(17);
 inline pros::Distance dRight(14);
-inline pros::Distance dBack(12);
+inline pros::Distance dBack(15);
 inline pros::Distance dFront(16);
 // inline pros::Optical colour(16);
 
@@ -77,7 +77,7 @@ inline lemlib::ControllerSettings
     );
 inline lemlib::ControllerSettings
     angular_controller(3.7,  // Proportional gain (kP)
-                       0.05, // Integral gain (kI)
+                       0.04, // Integral gain (kI)
                        28.4, // Derivative gain (kD)
                        10,   // Anti windup
                        0,    // Small error range, in degrees
